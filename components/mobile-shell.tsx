@@ -7,6 +7,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { bottomTabs } from "@/lib/university-data";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "./theme-toggleButton";
+import Image from "next/image";
 
 export function MobileShell({
   children,
@@ -35,9 +36,9 @@ export function MobileShell({
         <div className="flex items-center justify-between gap-3">
           {/* Branding */}
           <div className="min-w-0">
-            <h1 className="truncate text-xl font-bold tracking-tight text-foreground">{title}</h1>
+            <Image src="/icons/univers_logo.png" alt="Logo" width={102} height={102} />
 
-            <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
+            {/* <p className="truncate text-xs text-muted-foreground">{subtitle}</p> */}
           </div>
 
           {/* Actions */}
