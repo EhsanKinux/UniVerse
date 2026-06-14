@@ -1,7 +1,7 @@
-'use client";'
+"use client";
 
 import { useState } from "react";
-import { ChevronDown, Download, FileText } from "@hugeicons/core-free-icons";
+import { ArrowDown01Icon, Download01Icon, File01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { Department } from "@/lib/chart-data";
@@ -18,18 +18,16 @@ export function DepartmentCard({ department, index }: DepartmentCardProps) {
   return (
     <div
       className={cn(
-        "group overflow-hidden rounded-3xl border bg-surface-card shadow-sm backdrop-blur-xl transition-all duration-300",
+        "group overflow-hidden rounded-3xl border bg-card/85 shadow-sm backdrop-blur-xl transition-all duration-300",
         isOpen ? "border-border shadow-md" : "border-border hover:shadow-md",
       )}
-      style={{
-        animationDelay: `${index * 60}ms`,
-        animation: "fadeInUp 0.5s ease-out both",
-      }}
+      style={{ animation: "fade-in-up 0.5s ease-out both", animationDelay: `${index * 60}ms` }}
     >
       {/* Header - Clickable */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center gap-4 p-4 text-right transition-colors hover:bg-surface-dim/50"
+        aria-expanded={isOpen}
+        className="flex w-full items-center gap-4 p-4 text-right transition-colors hover:bg-muted/40"
       >
         {/* Icon */}
         <div
@@ -44,29 +42,35 @@ export function DepartmentCard({ department, index }: DepartmentCardProps) {
         </div>
 
         {/* Title & Count */}
-        <div className="flex-1 min-w-0">
-          <h3 className="text-base font-bold text-text truncate">{department.title}</h3>
-          <p className="mt-0.5 text-xs font-medium text-text-muted">{department.pdfs.length} چارت آموزشی</p>
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-base font-bold text-foreground">{department.title}</h3>
+          <p className="mt-0.5 text-xs font-medium text-muted-foreground">{department.pdfs.length} چارت آموزشی</p>
         </div>
 
         {/* Chevron */}
         <div
           className={cn(
-            "flex size-9 shrink-0 items-center justify-center rounded-xl border border-border bg-surface transition-all duration-300",
-            isOpen && "rotate-180 bg-primary/10 border-primary/20",
+            "flex size-9 shrink-0 items-center justify-center rounded-xl border border-border bg-background transition-all duration-300",
+            isOpen && "rotate-180 border-primary/20 bg-primary/10",
           )}
         >
           <HugeiconsIcon
-            icon={ChevronDown}
-            className={cn("text-text-muted transition-colors", isOpen && "text-primary")}
+            icon={ArrowDown01Icon}
+            size={18}
+            className={cn("text-muted-foreground transition-colors", isOpen && "text-primary")}
           />
         </div>
       </button>
 
-      {/* Content - Accordion */}
-      <div className={cn("accordion-content", isOpen && "open")}>
-        <div>
-          <div className="border-t border-border-light px-4 pb-4 pt-3">
+      {/* Content - CSS grid accordion (no extra keyframes needed) */}
+      <div
+        className={cn(
+          "grid transition-[grid-template-rows] duration-300 ease-out",
+          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="border-t border-border px-4 pt-3 pb-4">
             <div className="space-y-2.5">
               {department.pdfs.map((pdf, pdfIndex) => (
                 <a
@@ -74,10 +78,8 @@ export function DepartmentCard({ department, index }: DepartmentCardProps) {
                   href={pdf.url}
                   download={pdf.fileName}
                   className={cn(
-                    "flex items-center gap-3 rounded-2xl border p-3.5 transition-all duration-200",
-                    "bg-surface hover:bg-surface-dim",
-                    "border-border-light hover:border-border",
-                    "hover:shadow-sm active:scale-[0.98]",
+                    "flex items-center gap-3 rounded-2xl border border-border bg-background p-3.5",
+                    "transition-all duration-200 hover:bg-muted/50 hover:shadow-sm active:scale-[0.98]",
                   )}
                 >
                   {/* PDF Icon */}
@@ -88,12 +90,12 @@ export function DepartmentCard({ department, index }: DepartmentCardProps) {
                       department.borderClass,
                     )}
                   >
-                    <HugeiconsIcon icon={FileText} size={18} style={{ color: department.color }} />
+                    <HugeiconsIcon icon={File01Icon} size={18} style={{ color: department.color }} />
                   </div>
 
                   {/* PDF Info */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold leading-6 text-text">{pdf.title}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold leading-6 text-foreground">{pdf.title}</p>
                     {pdf.badge && (
                       <span
                         className={cn(
@@ -108,8 +110,8 @@ export function DepartmentCard({ department, index }: DepartmentCardProps) {
                   </div>
 
                   {/* Download Icon */}
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all hover:bg-primary/20">
-                    <HugeiconsIcon icon={Download} size={16} />
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary/15">
+                    <HugeiconsIcon icon={Download01Icon} size={16} />
                   </div>
                 </a>
               ))}
