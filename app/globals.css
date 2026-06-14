@@ -46,6 +46,28 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Department accent colors (used across chart + module pages) */
+  --color-computer: var(--computer);
+  --color-material: var(--material);
+  --color-mechanical: var(--mechanical);
+  --color-mining: var(--mining);
+  --color-chemical: var(--chemical);
+  --color-biomedical: var(--biomedical);
+  --color-electrical: var(--electrical);
+
+  --animate-fade-in-up: fade-in-up 0.5s ease-out both;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 :root {
@@ -81,6 +103,15 @@
   --sidebar-accent-foreground: oklch(0.218 0.008 223.9);
   --sidebar-border: oklch(0.925 0.005 214.3);
   --sidebar-ring: oklch(0.723 0.014 214.4);
+
+  /* Department accent colors — light */
+  --computer: oklch(0.55 0.2 280);
+  --material: oklch(0.62 0.17 50);
+  --mechanical: oklch(0.56 0.13 250);
+  --mining: oklch(0.55 0.1 195);
+  --chemical: oklch(0.58 0.14 155);
+  --biomedical: oklch(0.6 0.18 15);
+  --electrical: oklch(0.62 0.15 80);
 }
 
 .dark {
@@ -115,6 +146,15 @@
   --sidebar-accent-foreground: oklch(0.987 0.002 197.1);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.56 0.021 213.5);
+
+  /* Department accent colors — dark (lifted for contrast on dark bg) */
+  --computer: oklch(0.72 0.16 280);
+  --material: oklch(0.76 0.15 55);
+  --mechanical: oklch(0.72 0.12 250);
+  --mining: oklch(0.72 0.1 195);
+  --chemical: oklch(0.74 0.13 158);
+  --biomedical: oklch(0.72 0.15 18);
+  --electrical: oklch(0.78 0.14 82);
 }
 
 @layer base {
