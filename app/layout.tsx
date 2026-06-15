@@ -1,22 +1,39 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/components/theme-provider";
 import { FirstLaunchGate } from "@/components/onboarding/first-launch-gate";
 import { Providers } from "@/components/providers";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
+import { appleStartupImages } from "./apple-splash-screens";
+
+const APP_NAME = "Universe";
+const APP_DESCRIPTION = "سامانه یکپارچه مدیریت دانشگاه";
 
 export const metadata: Metadata = {
   title: {
-    default: "Universe",
-    template: "%s | Universe",
+    default: APP_NAME,
+    template: `%s | ${APP_NAME}`,
   },
-  description: "سامانه یکپارچه مدیریت دانشگاه",
-  applicationName: "Universe",
+  description: APP_DESCRIPTION,
+  applicationName: APP_NAME,
+  // The app/manifest.ts file convention auto-injects the <link rel="manifest"> tag.
+  // Hint to mobile browsers that this is a phone-number-free app shell.
+  formatDetection: { telephone: false },
   appleWebApp: {
     capable: true,
-    title: "Universe",
+    title: APP_NAME,
+    // Translucent bar lets our themed background extend under the status bar.
     statusBarStyle: "black-translucent",
+    startupImage: appleStartupImages,
+  },
+  icons: {
+    icon: [
+      { url: "/icons/u-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/u512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/splash/apple-icon-180.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
@@ -25,10 +42,30 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#081120",
+  // Let content paint into the notch / home-indicator areas; we pad it back
+  // with env(safe-area-inset-*) in globals.css so nothing is obscured.
+  viewportFit: "cover",
+  // Match each theme's background so the system chrome blends in.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#081120" },
+  ],
 };
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+// Peyda — Persian/Latin UI font. Self-hosted via next/font/local (no layout shift).
+// NOTE: only the ExtraBold weight is present. Add the rest of the family
+// (Regular/Medium/SemiBold/Bold) here so body text isn't forced to look heavy.
+const peyda = localFont({
+  variable: "--font-sans",
+  display: "swap",
+  src: [
+    {
+      path: "./fonts/Peyda-ExtraBold.ttf",
+      weight: "800",
+      style: "normal",
+    },
+  ],
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,7 +83,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       lang="fa"
       dir="rtl"
       suppressHydrationWarning
-      className={cn("h-full antialiased", geistSans.variable, geistMono.variable, inter.variable)}
+      className={cn("h-full antialiased", geistSans.variable, geistMono.variable, peyda.variable)}
     >
       <body className="min-h-full bg-background text-foreground font-sans">
         {/* Global Background Layer */}
@@ -60,6 +97,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
         <Providers>
           <FirstLaunchGate>{children}</FirstLaunchGate>
+          <InstallPrompt />
         </Providers>
       </body>
     </html>
