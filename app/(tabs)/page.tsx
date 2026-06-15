@@ -1,5 +1,7 @@
 import { moduleGroups } from "@/lib/university-data";
 import { SectionPage } from "@/components/section-page";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -78,17 +80,15 @@ export default function HomeTab() {
           <CarouselContent className="-ms-3">
             {announcements.map((item) => (
               <CarouselItem key={item.title} className="basis-[86%] ps-3">
-                <article className="h-full rounded-3xl border border-border bg-card/85 p-4 shadow-sm backdrop-blur-xl">
+                <Card className="h-full p-4">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                      {item.category}
-                    </span>
+                    <Badge variant="soft">{item.category}</Badge>
                     <time className="shrink-0 text-xs text-muted-foreground">{item.date}</time>
                   </div>
 
                   <h3 className="mt-4 line-clamp-1 text-base font-bold text-foreground">{item.title}</h3>
                   <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
-                </article>
+                </Card>
               </CarouselItem>
             ))}
           </CarouselContent>

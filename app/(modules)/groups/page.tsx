@@ -3,6 +3,7 @@ import { LinkSquare01Icon, UserGroupIcon, UserMultipleIcon } from "@hugeicons/co
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { SectionHeading } from "@/components/module/module-ui";
+import { Card } from "@/components/ui/card";
 import { groupCategories, platformMeta } from "@/lib/groups-data";
 import { cn } from "@/lib/utils";
 
@@ -36,10 +37,7 @@ export default function GroupsPage() {
               {category.groups.map((group) => {
                 const meta = platformMeta[group.platform];
                 return (
-                  <article
-                    key={group.id}
-                    className="overflow-hidden rounded-3xl border border-border bg-card/85 p-4 shadow-sm backdrop-blur-xl"
-                  >
+                  <Card key={group.id} className="overflow-hidden p-4">
                     <div className="flex items-start gap-3">
                       <div
                         className={cn(
@@ -76,7 +74,7 @@ export default function GroupsPage() {
                       {meta.cta}
                       <HugeiconsIcon icon={LinkSquare01Icon} size={15} className="text-muted-foreground" />
                     </a>
-                  </article>
+                  </Card>
                 );
               })}
             </div>

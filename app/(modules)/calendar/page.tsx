@@ -6,6 +6,7 @@ import { Calendar03Icon, CheckmarkCircle02Icon, Clock01Icon } from "@hugeicons/c
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, FilterChips, InfoNote, SectionHeading } from "@/components/module/module-ui";
+import { Card } from "@/components/ui/card";
 import {
   academicTerm,
   calendarEvents,
@@ -99,9 +100,9 @@ export default function CalendarPage() {
                         <span className={cn("size-1.5 rounded-full", status.dot)} />
                       </span>
 
-                      <article
+                      <Card
                         className={cn(
-                          "rounded-3xl border border-border bg-card/85 p-4 shadow-sm backdrop-blur-xl transition-all",
+                          "p-4 transition-all",
                           event.status === "current" && "border-emerald-500/30 ring-1 ring-emerald-500/10",
                         )}
                       >
@@ -135,7 +136,7 @@ export default function CalendarPage() {
                           />
                           <span className="text-[11px] font-medium text-muted-foreground">{status.label}</span>
                         </div>
-                      </article>
+                      </Card>
                     </div>
                   );
                 })}

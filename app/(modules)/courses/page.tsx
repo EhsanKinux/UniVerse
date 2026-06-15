@@ -13,6 +13,8 @@ import {
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, FilterChips, SearchBox, SectionHeading } from "@/components/module/module-ui";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { courseGroups, courses } from "@/lib/courses-data";
 import { cn } from "@/lib/utils";
 
@@ -69,22 +71,19 @@ export default function CoursesPage() {
               const full = course.enrolled >= course.capacity;
               const ratio = Math.min(100, Math.round((course.enrolled / course.capacity) * 100));
               return (
-                <article
-                  key={course.id}
-                  className="overflow-hidden rounded-3xl border border-border bg-card/85 p-4 shadow-sm backdrop-blur-xl"
-                >
+                <Card key={course.id} className="overflow-hidden p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h3 className="text-base font-bold leading-6 text-foreground">{course.title}</h3>
                       <p className="mt-1 font-mono text-xs text-muted-foreground">کد {course.code}</p>
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-1.5">
-                      <span className="rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
+                      <Badge variant="soft" className="rounded-lg px-2.5 py-1 font-bold">
                         {course.units} واحد
-                      </span>
-                      <span className="rounded-lg border border-border bg-background/70 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                      </Badge>
+                      <Badge variant="outline" className="rounded-lg bg-background/70 px-2 py-0.5 text-[10px]">
                         {course.group}
-                      </span>
+                      </Badge>
                     </div>
                   </div>
 
@@ -114,7 +113,7 @@ export default function CoursesPage() {
                       />
                     </div>
                   </div>
-                </article>
+                </Card>
               );
             })
           )}

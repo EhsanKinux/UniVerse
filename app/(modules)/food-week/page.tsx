@@ -5,6 +5,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { CheckmarkCircle02Icon, Coffee01Icon, RiceBowlIcon, Sun01Icon } from "@hugeicons/core-free-icons";
 
 import { ModuleHero } from "@/components/module/module-hero";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { foodWeek, type Meal } from "@/lib/food-data";
 import { cn } from "@/lib/utils";
 
@@ -78,9 +80,9 @@ export default function FoodWeekPage() {
           <h2 className="text-lg font-bold text-foreground">{activeDay.label}</h2>
           <span className="text-sm text-muted-foreground">{activeDay.date}</span>
           {activeDay.isToday && (
-            <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+            <Badge variant="success" className="px-2.5 py-0.5 text-[11px]">
               امروز
-            </span>
+            </Badge>
           )}
         </div>
 
@@ -117,7 +119,7 @@ function MealCard({
   onToggle: () => void;
 }) {
   return (
-    <article className="overflow-hidden rounded-3xl border border-border bg-card/85 p-4 shadow-sm backdrop-blur-xl">
+    <Card className="overflow-hidden p-4">
       <div className="flex items-center gap-2.5">
         <div className="flex size-9 items-center justify-center rounded-xl border border-border bg-background text-primary">
           <HugeiconsIcon icon={icon} size={18} />
@@ -167,6 +169,6 @@ function MealCard({
           </button>
         )}
       </div>
-    </article>
+    </Card>
   );
 }

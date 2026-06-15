@@ -6,6 +6,8 @@ import { Clock01Icon, Location04Icon, UserIcon } from "@hugeicons/core-free-icon
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState } from "@/components/module/module-ui";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { weeklySchedule } from "@/lib/schedule-data";
 import { cn } from "@/lib/utils";
 
@@ -66,9 +68,9 @@ export default function WeeklySchedulePage() {
         <div className="flex items-center gap-2 px-1">
           <h2 className="text-lg font-bold text-foreground">{activeDay.label}</h2>
           {activeDay.isToday && (
-            <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+            <Badge variant="success" className="px-2.5 py-0.5 text-[11px]">
               امروز
-            </span>
+            </Badge>
           )}
         </div>
 
@@ -77,10 +79,7 @@ export default function WeeklySchedulePage() {
         ) : (
           <div className="space-y-3">
             {activeDay.sessions.map((session) => (
-              <article
-                key={session.id}
-                className="flex gap-3 overflow-hidden rounded-3xl border border-border bg-card/85 p-4 shadow-sm backdrop-blur-xl"
-              >
+              <Card key={session.id} className="flex gap-3 overflow-hidden p-4">
                 {/* time rail */}
                 <div className="flex shrink-0 flex-col items-center">
                   <span className="font-mono text-sm font-bold text-foreground">{session.start}</span>
@@ -113,7 +112,7 @@ export default function WeeklySchedulePage() {
                     </p>
                   </div>
                 </div>
-              </article>
+              </Card>
             ))}
           </div>
         )}

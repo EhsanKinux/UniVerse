@@ -6,6 +6,7 @@ import { Call02Icon, CheckmarkCircle02Icon, Copy01Icon } from "@hugeicons/core-f
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, SearchBox } from "@/components/module/module-ui";
+import { Card } from "@/components/ui/card";
 import { contactGroups } from "@/lib/phone-data";
 import { cn } from "@/lib/utils";
 
@@ -74,7 +75,7 @@ export default function PhoneListPage() {
                 <h2 className="text-sm font-bold text-foreground">{group.title}</h2>
               </div>
 
-              <div className="overflow-hidden rounded-3xl border border-border bg-card/85 shadow-sm backdrop-blur-xl">
+              <Card className="overflow-hidden">
                 {group.contacts.map((contact, idx) => (
                   <div
                     key={`${contact.phone}-${idx}`}
@@ -112,7 +113,7 @@ export default function PhoneListPage() {
                     </a>
                   </div>
                 ))}
-              </div>
+              </Card>
             </div>
           ))
         )}

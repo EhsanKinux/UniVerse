@@ -10,6 +10,8 @@ import {
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { SectionHeading } from "@/components/module/module-ui";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { addDropWindow, requests, rules, steps, type RequestStatus } from "@/lib/add-drop-data";
 import { cn } from "@/lib/utils";
 
@@ -95,25 +97,20 @@ export default function AddDropPage() {
                     )}
                   />
                 </span>
-                <article
-                  className={cn(
-                    "rounded-3xl border border-border bg-card/85 p-4 shadow-sm backdrop-blur-xl",
-                    current && "border-primary/30 ring-1 ring-primary/10",
-                  )}
-                >
+                <Card className={cn("p-4", current && "border-primary/30 ring-1 ring-primary/10")}>
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-sm font-bold text-foreground">{step.title}</h3>
                     {done && (
                       <HugeiconsIcon icon={CheckmarkCircle02Icon} size={18} className="shrink-0 text-emerald-500" />
                     )}
                     {current && (
-                      <span className="shrink-0 rounded-lg bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                      <Badge variant="soft" className="rounded-lg px-2 py-0.5 text-[10px]">
                         مرحله فعلی
-                      </span>
+                      </Badge>
                     )}
                   </div>
                   <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{step.description}</p>
-                </article>
+                </Card>
               </div>
             );
           })}
@@ -128,10 +125,7 @@ export default function AddDropPage() {
             const status = requestStatusMap[req.status];
             const isAdd = req.action === "add";
             return (
-              <div
-                key={req.id}
-                className="flex items-center gap-3 rounded-2xl border border-border bg-card/85 p-3.5 shadow-sm backdrop-blur-xl"
-              >
+              <Card key={req.id} className="flex items-center gap-3 rounded-2xl p-3.5">
                 <div
                   className={cn(
                     "flex size-10 shrink-0 items-center justify-center rounded-xl border",
@@ -155,7 +149,7 @@ export default function AddDropPage() {
                   <HugeiconsIcon icon={status.icon} size={13} />
                   {status.label}
                 </span>
-              </div>
+              </Card>
             );
           })}
         </div>

@@ -6,6 +6,8 @@ import { ArrowDown01Icon, Award01Icon, BookOpen01Icon, ChartLineData01Icon } fro
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { InfoNote, SectionHeading } from "@/components/module/module-ui";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { overall, terms, type Grade, type Term } from "@/lib/grades-data";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +38,7 @@ export default function GradesPage() {
       />
 
       {/* GPA summary */}
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-card/85 p-5 shadow-sm backdrop-blur-xl">
+      <Card className="relative overflow-hidden p-5">
         <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-transparent" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 text-muted-foreground">
@@ -56,7 +58,7 @@ export default function GradesPage() {
             </div>
           </div>
         </div>
-      </section>
+      </Card>
 
       <section id="content" className="space-y-3">
         <SectionHeading title="کارنامه ترمی" subtitle="روی هر نیمسال بزنید تا ریز نمرات را ببینید." />
@@ -80,7 +82,7 @@ function TermCard({ term, defaultOpen }: { term: Term; defaultOpen?: boolean }) 
   const termUnits = term.grades.reduce((s, g) => s + g.units, 0);
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-border bg-card/85 shadow-sm backdrop-blur-xl">
+    <Card className="overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         aria-expanded={open}
@@ -102,7 +104,7 @@ function TermCard({ term, defaultOpen }: { term: Term; defaultOpen?: boolean }) 
               <p className="text-[10px] text-muted-foreground">معدل ترم</p>
             </>
           ) : (
-            <span className="rounded-lg bg-primary/10 px-2 py-1 text-[10px] font-medium text-primary">جاری</span>
+            <Badge variant="soft" className="rounded-lg px-2 py-1 text-[10px]">جاری</Badge>
           )}
         </div>
         <HugeiconsIcon
@@ -137,6 +139,6 @@ function TermCard({ term, defaultOpen }: { term: Term; defaultOpen?: boolean }) 
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
