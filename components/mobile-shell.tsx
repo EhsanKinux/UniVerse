@@ -28,7 +28,7 @@ export function MobileShell({
           safe-top sticky top-0 z-30
           border-b border-border
           bg-background/80
-          px-4 pt-3 pb-4
+          px-4 pb-4
           backdrop-blur-xl
           supports-backdrop-filter:bg-background/70
         "
@@ -76,7 +76,7 @@ export function MobileShell({
           safe-bottom sticky bottom-0 z-30
           border-t border-border
           bg-background/85
-          px-3 py-2
+          px-3 pt-2
           backdrop-blur-xl
           supports-backdrop-filter:bg-background/75
         "

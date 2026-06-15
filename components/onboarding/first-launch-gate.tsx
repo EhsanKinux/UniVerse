@@ -29,7 +29,8 @@ export function FirstLaunchGate({ children }: { children: React.ReactNode }) {
         onFinish={() => {
           localStorage.setItem(KEY, "1");
           setShowOnboarding(false);
-          router.replace("/");
+
+          router.replace("/sign-in");
         }}
       />
     );

@@ -47,7 +47,9 @@ export function OnboardingFlow({ onFinish }: { onFinish: () => void }) {
   const [showSplash, setShowSplash] = React.useState(true);
 
   React.useEffect(() => {
-    const t = window.setTimeout(() => setShowSplash(false), 5000);
+    // Brief brand moment, then straight into onboarding. Native apps dismiss
+    // their splash as soon as they're ready rather than holding an arbitrary delay.
+    const t = window.setTimeout(() => setShowSplash(false), 1800);
     return () => clearTimeout(t);
   }, []);
 
