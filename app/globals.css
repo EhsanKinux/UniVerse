@@ -163,6 +163,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Respect the notch in landscape so content never sits under it. */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -170,4 +173,59 @@
   html {
     @apply font-sans;
   }
+}
+
+/* ----------------------------------------------------------------------------
+   Native-app feel
+   These rules make the PWA behave less like a web page and more like a shell:
+   no tap flash, no long-press menus, no accidental text selection of chrome,
+   no rubber-band / pull-to-refresh, no image drag-ghosts.
+---------------------------------------------------------------------------- */
+html {
+  /* Kill the grey flash iOS/Android paint on tap. */
+  -webkit-tap-highlight-color: transparent;
+  /* Don't let the OS resize our text on rotation. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  /* Block pull-to-refresh and overscroll glow/bounce. */
+  overscroll-behavior: none;
+  /* No iOS long-press callout bubble on links/images. */
+  -webkit-touch-callout: none;
+  /* UI chrome shouldn't be selectable like an article. */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Re-enable selection where it's actually expected: real content + inputs. */
+input,
+textarea,
+select,
+[contenteditable="true"],
+.selectable,
+.selectable * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Images shouldn't be draggable like a desktop browser. */
+img,
+svg,
+a {
+  -webkit-user-drag: none;
+}
+
+/* Safe-area utilities (unlayered so they always win over Tailwind padding).
+   max() keeps a sensible minimum on devices without a notch. */
+.safe-top {
+  padding-top: max(env(safe-area-inset-top), 0.75rem);
+}
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+}
+.safe-x {
+  padding-left: max(env(safe-area-inset-left), 0px);
+  padding-right: max(env(safe-area-inset-right), 0px);
 }
