@@ -3,6 +3,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import type { IconSvgElement } from "@hugeicons/react";
 
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 
 type SectionModule = {
   title: string;
@@ -100,13 +102,11 @@ export function SectionLandingPage({
 }) {
   return (
     <div className="space-y-7">
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-card/85 p-5 shadow-sm backdrop-blur-xl">
+      <Card className="relative overflow-hidden p-5">
         <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-transparent" />
 
         <div className="relative z-10 space-y-4">
-          <div className="inline-flex rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-            {eyebrow}
-          </div>
+          <Badge variant="soft">{eyebrow}</Badge>
 
           <div className="space-y-2">
             <h1 className="text-2xl font-bold leading-9 tracking-tight text-foreground">{title}</h1>
@@ -121,7 +121,7 @@ export function SectionLandingPage({
             ))}
           </div>
         </div>
-      </section>
+      </Card>
 
       <SectionPage title="امکانات این بخش" modules={modules} variant="apps" />
     </div>

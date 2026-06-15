@@ -5,6 +5,7 @@ import { ArrowDown01Icon, Download01Icon, File01Icon } from "@hugeicons/core-fre
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { Department } from "@/lib/chart-data";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface DepartmentCardProps {
@@ -16,10 +17,10 @@ export function DepartmentCard({ department, index }: DepartmentCardProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div
+    <Card
       className={cn(
-        "group overflow-hidden rounded-3xl border bg-card/85 shadow-sm backdrop-blur-xl transition-all duration-300",
-        isOpen ? "border-border shadow-md" : "border-border hover:shadow-md",
+        "group overflow-hidden transition-all duration-300",
+        isOpen ? "shadow-md" : "hover:shadow-md",
       )}
       style={{ animation: "fade-in-up 0.5s ease-out both", animationDelay: `${index * 60}ms` }}
     >
@@ -119,6 +120,6 @@ export function DepartmentCard({ department, index }: DepartmentCardProps) {
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

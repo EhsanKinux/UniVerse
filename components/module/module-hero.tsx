@@ -4,6 +4,8 @@ import type { IconSvgElement } from "@hugeicons/react";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 
 export type HeroStat = {
   icon: IconSvgElement;
@@ -43,7 +45,7 @@ export function ModuleHero({
         بازگشت به {backLabel}
       </Link>
 
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-card/85 p-5 shadow-sm backdrop-blur-xl">
+      <Card className="relative overflow-hidden p-5">
         <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-transparent" />
         <div className="absolute -top-8 -start-8 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
         <div className="absolute -bottom-6 -end-6 h-24 w-24 rounded-full bg-primary/5 blur-2xl" />
@@ -60,11 +62,7 @@ export function ModuleHero({
               <HugeiconsIcon icon={icon} size={30} className="relative z-10" />
             </div>
 
-            {status && (
-              <span className="rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                {status}
-              </span>
-            )}
+            {status && <Badge variant="soft">{status}</Badge>}
           </div>
 
           <div className="space-y-2">
@@ -91,7 +89,7 @@ export function ModuleHero({
 
           {children}
         </div>
-      </section>
+      </Card>
     </div>
   );
 }
