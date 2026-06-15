@@ -6,7 +6,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 import { bottomTabs } from "@/lib/university-data";
 import { cn } from "@/lib/utils";
-import { ModeToggle } from "./theme-toggleButton";
+import { ProfileMenu } from "./profile-menu";
 import Image from "next/image";
 
 export function MobileShell({
@@ -35,35 +35,23 @@ export function MobileShell({
       >
         <div className="flex items-center justify-between gap-3">
           {/* Branding */}
-          <div className="min-w-0">
-            <Image src="/icons/univers_logo.png" alt="Logo" width={102} height={102} />
-
-            {/* <p className="truncate text-xs text-muted-foreground">{subtitle}</p> */}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            <ModeToggle />
-
-            {/* Status Badge */}
-            <div
-              className="
-                flex items-center gap-2
-                rounded-2xl border border-border
-                bg-card/80 px-3 py-2
-                text-xs font-medium
-                text-muted-foreground
-                shadow-sm
-                backdrop-blur-xl
-              "
-            >
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-              </span>
-              آنلاین
+          <div className="flex min-w-0 items-center gap-2.5">
+            <Image
+              src="/icons/univers_logo.png"
+              alt="Universe"
+              width={40}
+              height={40}
+              className="size-10 shrink-0 object-contain"
+              priority
+            />
+            <div className="min-w-0 leading-tight">
+              <p className="truncate text-sm font-bold tracking-tight text-foreground">{title}</p>
+              <p className="truncate text-[11px] text-muted-foreground">{subtitle}</p>
             </div>
           </div>
+
+          {/* Profile */}
+          <ProfileMenu />
         </div>
       </header>
 
