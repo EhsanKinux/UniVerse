@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { AuthForm } from "@/components/auth/auth-form";
 
 export const metadata: Metadata = {
-  title: "ورود",
+  title: "ثبت‌نام",
 };
 
-export default function SignInPage() {
-  return <AuthForm mode="sign-in" />;
+export default function SignUpPage() {
+  return <AuthForm mode="sign-up" />;
 }
