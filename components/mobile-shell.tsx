@@ -19,6 +19,7 @@ export function MobileShell({
   subtitle?: string;
 }) {
   const pathname = usePathname();
+  const activeIndex = bottomTabs.findIndex((tab) => tab.href === pathname);
 
   return (
     <div className="flex min-h-dvh flex-col bg-background text-foreground">
@@ -58,59 +59,59 @@ export function MobileShell({
       {/* Content */}
       <main className="flex-1 px-4 py-4">{children}</main>
 
-      {/* Bottom Navigation */}
-      <nav
-        className="
-          safe-bottom sticky bottom-0 z-30
-          border-t border-border
-          bg-background/85
-          px-3 pt-2
-          backdrop-blur-xl
-          supports-backdrop-filter:bg-background/75
-        "
-      >
-        <div className="grid grid-cols-4 gap-2">
-          {bottomTabs.map((item) => {
-            const active = pathname === item.href;
+      {/* Bottom Navigation — floating, liquid-glass tab bar.
+          The <nav> is a transparent click-through layer; only the inner pill
+          captures taps, so content stays visible/scrollable in the side gaps. */}
+      <nav className="pointer-events-none sticky bottom-0 z-30 px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.85rem)]">
+        <div
+          className="
+            pointer-events-auto relative mx-auto grid max-w-md grid-cols-4
+            overflow-hidden rounded-4xl
+            border border-white/40 ring-1 ring-black/5
+            bg-background/70 backdrop-blur-2xl backdrop-saturate-150
+            shadow-[0_12px_32px_-10px_rgba(0,0,0,0.30),inset_0_1px_0_0_rgba(255,255,255,0.30)]
+            dark:border-white/10 dark:bg-background/55 dark:ring-white/5
+            dark:shadow-[0_12px_36px_-10px_rgba(0,0,0,0.6),inset_0_1px_0_0_rgba(255,255,255,0.12)]
+          "
+        >
+          {/* Glass edge highlight catching the light along the top rim */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-white/70 to-transparent dark:via-white/25"
+          />
+
+          {/* Sliding active indicator. App is RTL, so array index 0 sits at the
+              far right — translate from the inline-start (physical left) edge. */}
+          <span
+            aria-hidden
+            className={cn(
+              "absolute inset-y-1.5 start-0 z-0 w-1/4 px-1.5 transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              activeIndex < 0 && "opacity-0",
+            )}
+            style={{ transform: `translateX(${(bottomTabs.length - 1 - Math.max(activeIndex, 0)) * 100}%)` }}
+          >
+            <span className="block size-full rounded-3xl border border-primary/20 bg-primary/12 shadow-sm" />
+          </span>
+
+          {bottomTabs.map((item, i) => {
+            const active = i === activeIndex;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  `
-                    group relative flex flex-col items-center
-                    justify-center gap-1 overflow-hidden
-                    rounded-2xl px-2 py-2
-                    text-[11px] font-medium
-                    transition-all duration-200
-                    active:scale-95
-                  `,
-                  active
-                    ? `
-                      bg-primary/12
-                      text-primary
-                      shadow-sm
-                    `
-                    : `
-                      text-muted-foreground
-                      hover:bg-accent
-                      hover:text-accent-foreground
-                    `,
+                  "relative z-10 flex flex-col items-center justify-center gap-1 py-2.5",
+                  "text-[11px] font-medium transition-[color,transform] duration-200 active:scale-90",
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                {/* Active Glow */}
-                {active && <div className="absolute inset-0 bg-linear-to-t from-primary/10 to-transparent" />}
-
                 <HugeiconsIcon
                   icon={item.icon}
-                  className={cn(
-                    "relative z-10 h-5 w-5 transition-all duration-200",
-                    active ? "scale-110 text-primary" : "group-hover:scale-105",
-                  )}
+                  className={cn("size-5 transition-transform duration-300 ease-out", active && "scale-110")}
                 />
-
-                <span className="relative z-10">{item.title}</span>
+                <span>{item.title}</span>
               </Link>
             );
           })}
