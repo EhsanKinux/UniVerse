@@ -40,9 +40,9 @@ export function MobileShell({
             <Image
               src="/icons/univers_logo.png"
               alt="Universe"
-              width={40}
-              height={40}
-              className="size-10 shrink-0 object-contain"
+              width={80}
+              height={80}
+              className="shrink-0 object-contain"
               priority
             />
             <div className="min-w-0 leading-tight">
