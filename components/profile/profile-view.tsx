@@ -2,13 +2,11 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight01Icon, Logout02Icon } from "@hugeicons/core-free-icons";
 
-import { useMounted } from "@/hooks/use-mounted";
 import { Button } from "@/components/ui/button";
-import { getMockUser, signOutMock, type MockUser } from "@/lib/auth";
+import { useProfile, useLogout } from "@/hooks/auth";
 import { APP_VERSION } from "@/lib/profile-data";
 import { ProfileIdentityCard } from "./profile-identity-card";
 import { ProfileEditCard } from "./profile-edit-card";
@@ -18,23 +16,12 @@ import { ProfilePreferences } from "./profile-preferences";
 import { ProfileSupportCard } from "./profile-support";
 
 export function ProfileView() {
-  const router = useRouter();
-  const mounted = useMounted();
+  const logout = useLogout();
   const [editing, setEditing] = React.useState(false);
-  // Local override takes precedence once the user edits in this session; until
-  // then we derive from localStorage (gated by `mounted` for hydration safety).
-  const [userOverride, setUserOverride] = React.useState<MockUser | null>(null);
-
-  const storedUser = React.useMemo(() => (mounted ? getMockUser() : null), [mounted]);
-  const user = userOverride ?? storedUser;
-
-  const name = user?.name ?? "کاربر";
-  const email = user?.email ?? "—";
-
-  function handleSignOut() {
-    signOutMock();
-    router.replace("/sign-in");
-  }
+  // Identity comes from the server (`/auth/me`); phone/name-override are local
+  // extras. `useProfile` re-reads local storage each render, so leaving edit
+  // mode reflects the saved changes immediately.
+  const { user, name, email, phone, mounted } = useProfile();
 
   return (
     <div className="animate-fade-in-up space-y-6 pb-4">
@@ -48,19 +35,17 @@ export function ProfileView() {
 
       {editing ? (
         <ProfileEditCard
-          user={user}
+          email={email}
+          serverName={user?.name ?? null}
           onCancel={() => setEditing(false)}
-          onSaved={(updated) => {
-            setUserOverride(updated);
-            setEditing(false);
-          }}
+          onSaved={() => setEditing(false)}
         />
       ) : (
         <ProfileIdentityCard
           mounted={mounted}
           name={name}
           email={email}
-          phone={user?.phone}
+          phone={phone}
           onEdit={() => setEditing(true)}
         />
       )}
@@ -73,7 +58,8 @@ export function ProfileView() {
       <Button
         variant="destructive"
         size="lg"
-        onClick={handleSignOut}
+        onClick={() => logout.mutate()}
+        disabled={logout.isPending}
         className="h-12 w-full rounded-2xl text-base font-semibold"
       >
         <HugeiconsIcon icon={Logout02Icon} size={20} />
