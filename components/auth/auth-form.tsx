@@ -7,15 +7,15 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Mail01Icon, UserIcon, Idea01Icon } from "@hugeicons/core-free-icons";
+import { Mail01Icon, UserIcon, AlertCircleIcon } from "@hugeicons/core-free-icons";
 
 import { Button } from "@/components/ui/button";
-import { signInMock } from "@/lib/auth";
+import { useLogin, useRegister } from "@/hooks/auth";
 import { signInSchema, signUpSchema, type AuthFormValues } from "@/lib/validations/auth";
 import { FormField } from "./form-field";
 import { PasswordField } from "./password-field";
 import { ModeSwitch } from "./mode-switch";
-import { SocialAuth, type SsoProvider } from "./social-auth";
+import { SocialAuth } from "./social-auth";
 
 type Mode = "sign-in" | "sign-up";
 
@@ -24,7 +24,7 @@ const COPY: Record<Mode, { title: string; subtitle: string; cta: string; emailLa
     title: "خوش آمدید 👋",
     subtitle: "برای ادامه وارد حساب کاربری خود شوید",
     cta: "ورود",
-    emailLabel: "ایمیل یا شماره دانشجویی",
+    emailLabel: "ایمیل",
     switchText: "حساب کاربری ندارید؟",
     switchHref: "/sign-up",
     switchCta: "ثبت‌نام",
@@ -40,37 +40,64 @@ const COPY: Record<Mode, { title: string; subtitle: string; cta: string; emailLa
   },
 };
 
+/** Only allow internal, absolute paths as a post-login redirect (no open redirects). */
+function safeRedirectTarget(): string {
+  if (typeof window === "undefined") return "/";
+  const target = new URLSearchParams(window.location.search).get("redirect");
+  if (target && target.startsWith("/") && !target.startsWith("//")) return target;
+  return "/";
+}
+
 export function AuthForm({ mode }: { mode: Mode }) {
   const router = useRouter();
   const copy = COPY[mode];
   const isSignUp = mode === "sign-up";
-  const [ssoPending, setSsoPending] = React.useState(false);
+
+  const login = useLogin();
+  const register = useRegister();
+  const [ssoNote, setSsoNote] = React.useState<string | null>(null);
 
   const {
-    register,
+    register: registerField,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    setError,
+    formState: { errors },
   } = useForm<AuthFormValues>({
     resolver: zodResolver(isSignUp ? signUpSchema : signInSchema),
     defaultValues: { name: "", email: "", password: "", terms: false },
     mode: "onTouched",
   });
 
-  const busy = isSubmitting || ssoPending;
+  const activeMutation = isSignUp ? register : login;
+  const busy = activeMutation.isPending;
+  const serverError = activeMutation.error?.message ?? null;
 
-  async function onSubmit(values: AuthFormValues) {
-    // Mock auth: fake a short round-trip, persist the user, then enter the app.
-    await new Promise((resolve) => setTimeout(resolve, 700));
-    signInMock({ name: values.name?.trim() || values.email.split("@")[0] || "کاربر", email: values.email });
-    router.replace("/");
+  function onSubmit(values: AuthFormValues) {
+    setSsoNote(null);
+    const email = values.email.trim();
+    const password = values.password;
+
+    if (isSignUp) {
+      register.mutate(
+        { email, password, name: values.name.trim() || undefined },
+        {
+          onSuccess: () => router.replace(safeRedirectTarget()),
+          onError: (err) => {
+            // Surface "email already in use" right on the field.
+            if (err.status === 409) setError("email", { message: err.message });
+          },
+        },
+      );
+    } else {
+      login.mutate(
+        { email, password },
+        { onSuccess: () => router.replace(safeRedirectTarget()) },
+      );
+    }
   }
 
-  function onSso(provider: SsoProvider) {
-    setSsoPending(true);
-    window.setTimeout(() => {
-      signInMock({ name: `کاربر ${provider}`, email: `${provider.toLowerCase()}@universe.app` });
-      router.replace("/");
-    }, 700);
+  function onSso() {
+    setSsoNote("ورود با شبکه‌های اجتماعی به‌زودی فعال می‌شود.");
   }
 
   return (
@@ -89,6 +116,17 @@ export function AuthForm({ mode }: { mode: Mode }) {
         <ModeSwitch mode={mode} />
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5" noValidate>
+          {/* Server / network error banner */}
+          {serverError && (
+            <div
+              role="alert"
+              className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/8 px-3 py-2.5 text-xs leading-5 text-destructive"
+            >
+              <HugeiconsIcon icon={AlertCircleIcon} className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
+              <span>{serverError}</span>
+            </div>
+          )}
+
           {isSignUp && (
             <FormField
               label="نام و نام خانوادگی"
@@ -96,19 +134,19 @@ export function AuthForm({ mode }: { mode: Mode }) {
               placeholder="مثلاً علی رضایی"
               autoComplete="name"
               error={errors.name?.message}
-              {...register("name")}
+              {...registerField("name")}
             />
           )}
 
           <FormField
             label={copy.emailLabel}
             icon={Mail01Icon}
-            type={isSignUp ? "email" : "text"}
+            type="email"
             placeholder="you@university.ac.ir"
-            autoComplete={isSignUp ? "email" : "username"}
+            autoComplete="email"
             dir="ltr"
             error={errors.email?.message}
-            {...register("email")}
+            {...registerField("email")}
           />
 
           <PasswordField
@@ -122,19 +160,13 @@ export function AuthForm({ mode }: { mode: Mode }) {
                 </Link>
               ) : null
             }
-            {...register("password")}
+            {...registerField("password")}
           />
-
-          {/* Demo hint */}
-          <div className="flex items-start gap-2 rounded-xl bg-primary/8 px-3 py-2 text-[11px] leading-5 text-muted-foreground">
-            <HugeiconsIcon icon={Idea01Icon} className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={1.8} />
-            <span>حالت نمایشی است؛ با هر ایمیل و رمزی می‌توانید وارد شوید.</span>
-          </div>
 
           {isSignUp && (
             <div className="space-y-1">
               <label className="flex items-start gap-2 text-[11px] leading-5 text-muted-foreground">
-                <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[var(--primary)]" {...register("terms")} />
+                <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[var(--primary)]" {...registerField("terms")} />
                 <span>
                   با <span className="text-foreground">قوانین و حریم خصوصی</span> موافقم.
                 </span>
@@ -144,7 +176,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           )}
 
           <Button type="submit" size="lg" disabled={busy} className="h-12 w-full rounded-2xl text-base font-semibold shadow-md shadow-primary/20">
-            {isSubmitting ? <Spinner /> : copy.cta}
+            {busy ? <Spinner /> : copy.cta}
           </Button>
         </form>
 
@@ -156,6 +188,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         </div>
 
         <SocialAuth disabled={busy} onSelect={onSso} />
+        {ssoNote && <p className="mt-3 text-center text-[11px] text-muted-foreground">{ssoNote}</p>}
       </div>
 
       {/* Switch */}
