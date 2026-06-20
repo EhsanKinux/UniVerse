@@ -21,21 +21,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getInitials, getMockUser, signOutMock } from "@/lib/auth";
-import { useMounted } from "@/hooks/use-mounted";
+import { useProfile, useLogout } from "@/hooks/auth";
 
 export function ProfileMenu() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
-  const mounted = useMounted();
-  const user = mounted ? getMockUser() : null;
-
-  const name = user?.name ?? "کاربر";
-  const email = user?.email ?? "—";
+  const { name, email, initials, mounted } = useProfile();
+  const logout = useLogout();
 
   function handleSignOut() {
-    signOutMock();
-    router.replace("/sign-in");
+    // useLogout revokes the refresh token server-side then redirects to sign-in.
+    logout.mutate();
   }
 
   return (
@@ -47,7 +43,7 @@ export function ProfileMenu() {
         <Avatar className="size-10 border border-border shadow-sm">
           <AvatarImage src={undefined} alt={name} />
           <AvatarFallback className="bg-primary/12 text-sm font-bold text-primary">
-            {mounted ? getInitials(name) : ""}
+            {mounted ? initials : ""}
           </AvatarFallback>
         </Avatar>
         <span className="absolute bottom-0 end-0 size-3 rounded-full border-2 border-background bg-emerald-500" />
@@ -58,7 +54,7 @@ export function ProfileMenu() {
         <div className="flex items-center gap-3 p-2">
           <Avatar className="size-10">
             <AvatarFallback className="bg-primary/12 text-sm font-bold text-primary">
-              {mounted ? getInitials(name) : ""}
+              {mounted ? initials : ""}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
