@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getInitials } from "@/lib/auth";
+import { getInitials } from "@/lib/utils";
 import { academicProfile } from "@/lib/profile-data";
 
 export function ProfileIdentityCard({
