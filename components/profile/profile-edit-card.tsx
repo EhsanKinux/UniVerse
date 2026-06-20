@@ -8,41 +8,42 @@ import { Cancel01Icon, Mail01Icon, SmartPhone01Icon, Tick02Icon, UserIcon } from
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { updateMockUser, type MockUser } from "@/lib/auth";
+import { getLocalProfile, updateLocalProfile } from "@/lib/local-profile";
 
-const emailValid = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 const phoneValid = (v: string) => v.trim() === "" || /^[0-9۰-۹+\s()-]{6,}$/.test(v.trim());
 
 export function ProfileEditCard({
-  user,
+  email,
+  serverName,
   onCancel,
   onSaved,
 }: {
-  user: MockUser | null;
+  /** Account email — read-only (the backend has no profile-update endpoint). */
+  email: string;
+  /** Display name from the server, used as the default when no local override. */
+  serverName: string | null;
   onCancel: () => void;
-  onSaved: (user: MockUser) => void;
+  onSaved: () => void;
 }) {
-  const [name, setName] = React.useState(user?.name ?? "");
-  const [email, setEmail] = React.useState(user?.email ?? "");
-  const [phone, setPhone] = React.useState(user?.phone ?? "");
+  const local = getLocalProfile();
+  const [name, setName] = React.useState(local.name ?? serverName ?? "");
+  const [phone, setPhone] = React.useState(local.phone ?? "");
   const [submitted, setSubmitted] = React.useState(false);
 
   const nameOk = name.trim().length >= 2;
-  const eOk = emailValid(email);
   const pOk = phoneValid(phone);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!nameOk || !eOk || !pOk) {
+    if (!nameOk || !pOk) {
       setSubmitted(true);
       return;
     }
-    const updated = updateMockUser({
+    updateLocalProfile({
       name: name.trim(),
-      email: email.trim(),
       phone: phone.trim() || undefined,
     });
-    if (updated) onSaved(updated);
+    onSaved();
   }
 
   return (
@@ -68,12 +69,13 @@ export function ProfileEditCard({
           label="ایمیل"
           icon={Mail01Icon}
           value={email}
-          onChange={setEmail}
+          onChange={() => {}}
           placeholder="you@university.ac.ir"
           type="email"
           dir="ltr"
           autoComplete="email"
-          error={submitted && !eOk ? "ایمیل معتبر نیست." : undefined}
+          readOnly
+          hint="ایمیل حساب قابل تغییر نیست."
         />
         <EditField
           label="شماره تماس (اختیاری)"
@@ -111,6 +113,8 @@ function EditField({
   dir,
   autoComplete,
   error,
+  readOnly,
+  hint,
 }: {
   label: string;
   icon: IconSvgElement;
@@ -121,6 +125,8 @@ function EditField({
   dir?: "ltr" | "rtl";
   autoComplete?: string;
   error?: string;
+  readOnly?: boolean;
+  hint?: string;
 }) {
   return (
     <div className="space-y-1.5">
@@ -138,16 +144,19 @@ function EditField({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           autoComplete={autoComplete}
+          readOnly={readOnly}
           aria-invalid={error ? true : undefined}
           className={cn(
             "h-12 w-full rounded-2xl border bg-card/85 pr-11 pl-4 text-sm font-medium text-foreground",
             "shadow-sm outline-none transition-all placeholder:text-muted-foreground",
             "focus:border-primary/40 focus:ring-2 focus:ring-primary/10",
+            readOnly && "cursor-not-allowed bg-muted/40 text-muted-foreground focus:border-border focus:ring-0",
             error ? "border-destructive/50 focus:border-destructive/50 focus:ring-destructive/10" : "border-border",
           )}
         />
       </div>
       {error && <p className="px-1 text-xs text-destructive">{error}</p>}
+      {!error && hint && <p className="px-1 text-[11px] text-muted-foreground">{hint}</p>}
     </div>
   );
 }
