@@ -2,7 +2,7 @@
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { IconSvgElement } from "@hugeicons/react";
-import { Search01Icon } from "@hugeicons/core-free-icons";
+import { Alert02Icon, RefreshIcon, Search01Icon } from "@hugeicons/core-free-icons";
 
 import { cn } from "@/lib/utils";
 
@@ -116,5 +116,32 @@ export function InfoNote({ title, children }: { title: string; children: React.R
       <h2 className="text-base font-bold text-foreground">{title}</h2>
       <p className="mt-2 text-sm leading-7 text-muted-foreground">{children}</p>
     </section>
+  );
+}
+
+export function ErrorState({
+  title = "خطا در دریافت اطلاعات",
+  subtitle,
+  onRetry,
+}: {
+  title?: string;
+  subtitle?: string;
+  onRetry?: () => void;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-destructive/30 bg-destructive/5 p-10 text-center">
+      <HugeiconsIcon icon={Alert02Icon} size={40} className="mb-3 text-destructive/50" />
+      <p className="text-sm font-semibold text-foreground">{title}</p>
+      {subtitle && <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>}
+      {onRetry && (
+        <button
+          onClick={onRetry}
+          className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border bg-card/70 px-4 py-2 text-xs font-medium text-foreground transition-all hover:text-primary active:scale-95"
+        >
+          <HugeiconsIcon icon={RefreshIcon} size={14} />
+          تلاش دوباره
+        </button>
+      )}
+    </div>
   );
 }
