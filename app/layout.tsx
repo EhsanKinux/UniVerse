@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -52,26 +52,23 @@ export const viewport: Viewport = {
   ],
 };
 
-// Peyda — Persian/Latin UI font. Self-hosted via next/font/local (no layout shift).
-// NOTE: only the ExtraBold weight is present. Add the rest of the family
-// (Regular/Medium/SemiBold/Bold) here so body text isn't forced to look heavy.
-const peyda = localFont({
+// IRANSansWeb — the app's Persian/Latin UI font. Self-hosted via next/font/local
+// (no layout shift). Each static weight file is mapped to its real font-weight, so
+// `font-light` / `font-medium` / `font-bold` resolve to the matching cut instead of
+// faux-synthesizing every weight from a single face.
+const iranSans = localFont({
   variable: "--font-sans",
   display: "swap",
   src: [
-    {
-      path: "./fonts/Peyda-ExtraBold.ttf",
-      weight: "800",
-      style: "normal",
-    },
+    { path: "./fonts/IRANSansWeb_UltraLight.ttf", weight: "200", style: "normal" },
+    { path: "./fonts/IRANSansWeb_Light.ttf", weight: "300", style: "normal" },
+    { path: "./fonts/IRANSansWeb.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/IRANSansWeb_Medium.ttf", weight: "500", style: "normal" },
+    { path: "./fonts/IRANSansWeb_Bold.ttf", weight: "700", style: "normal" },
   ],
 });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
+// Geist Mono — used only by the `font-mono` utility (course codes, times, phone numbers).
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -83,7 +80,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       lang="fa"
       dir="rtl"
       suppressHydrationWarning
-      className={cn("h-full antialiased", geistSans.variable, geistMono.variable, peyda.variable)}
+      className={cn("h-full antialiased", geistMono.variable, iranSans.variable)}
     >
       <body className="min-h-full bg-background text-foreground font-sans">
         {/* Global Background Layer */}
