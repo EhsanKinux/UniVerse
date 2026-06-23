@@ -5,3 +5,8 @@ export const authKeys = {
   all: ["auth"] as const,
   me: () => [...authKeys.all, "me"] as const,
 };
+
+export const calendarKeys = {
+  all: ["calendar"] as const,
+  active: () => [...calendarKeys.all, "active"] as const,
+};
