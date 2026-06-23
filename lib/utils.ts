@@ -12,3 +12,10 @@ export function getInitials(name: string): string {
   if (parts.length === 1) return parts[0].slice(0, 2)
   return parts[0][0] + parts[1][0]
 }
+
+const PERSIAN_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"]
+
+/** Convert ASCII digits in a number/string to Persian (۰-۹) for display. */
+export function toPersianDigits(value: number | string): string {
+  return String(value).replace(/\d/g, (d) => PERSIAN_DIGITS[Number(d)])
+}
