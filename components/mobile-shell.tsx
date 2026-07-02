@@ -6,6 +6,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 import { bottomTabs } from "@/lib/university-data";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "./notifications/notification-bell";
 import { ProfileMenu } from "./profile-menu";
 import Image from "next/image";
 
@@ -51,8 +52,11 @@ export function MobileShell({
             </div>
           </div>
 
-          {/* Profile */}
-          <ProfileMenu />
+          {/* Notifications + profile */}
+          <div className="flex shrink-0 items-center gap-2">
+            <NotificationBell />
+            <ProfileMenu />
+          </div>
         </div>
       </header>
 
