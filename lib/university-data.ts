@@ -5,7 +5,6 @@ import {
   GraduationScrollIcon,
   CallIcon,
   ArrowReloadHorizontalIcon,
-  Notebook02Icon,
   SchoolIcon,
   Clock01Icon,
   UserGroupIcon,
@@ -33,12 +32,6 @@ export const moduleGroups = {
       href: "/courses",
       icon: Book02Icon,
       tone: "text-emerald-600 border-emerald-500/15 from-emerald-500/18 via-emerald-500/8 shadow-emerald-500/25 dark:text-emerald-300",
-    },
-    {
-      title: "نمرات",
-      href: "/grades",
-      icon: Notebook02Icon,
-      tone: "text-amber-600 border-amber-500/15 from-amber-500/18 via-amber-500/8 shadow-amber-500/25 dark:text-amber-300",
     },
   ],
 
@@ -89,9 +82,9 @@ export const sectionPages = {
   educational: {
     eyebrow: "امور آموزشی",
     title: "بخش آموزشی",
-    description: "چارت، تقویم، درس‌ها و نمرات را در یک فضای سریع و منظم دنبال کنید.",
+    description: "چارت، تقویم و دروس ارائه‌شده را در یک فضای سریع و منظم دنبال کنید.",
     modules: moduleGroups.educational,
-    stats: ["۴ سرویس", "آماده توسعه", "موبایل‌فرست"],
+    stats: ["۳ سرویس", "آماده توسعه", "موبایل‌فرست"],
   },
   services: {
     eyebrow: "خدمات دانشگاهی",
@@ -137,15 +130,6 @@ export const modulePages = {
     highlights: ["لیست گروه‌های درسی", "جست‌وجوی سریع", "فیلتر براساس ترم"],
     primaryAction: "مرور درس‌ها",
   },
-  grades: {
-    module: moduleGroups.educational[3],
-    sectionHref: "/educational",
-    sectionTitle: "بخش آموزشی",
-    status: "خصوصی",
-    description: "نمرات، معدل ترمی و وضعیت آموزشی دانشجو در یک نمای امن و خلاصه نمایش داده می‌شود.",
-    highlights: ["نمای نمرات ترم", "خلاصه معدل", "حریم خصوصی دانشجو"],
-    primaryAction: "مشاهده نمرات",
-  },
   systems: {
     module: moduleGroups.services[0],
     sectionHref: "/services",
@@ -187,8 +171,8 @@ export const modulePages = {
     sectionHref: "/student",
     sectionTitle: "بخش دانشجویی",
     status: "شخصی",
-    description: "برنامه کلاس‌ها، زمان‌ها و مکان‌ها در یک نمای موبایل‌فرست و قابل اسکن نمایش داده می‌شود.",
-    highlights: ["کلاس‌های امروز", "نمای هفتگی", "جزئیات زمان و مکان"],
+    description: "درس‌های خودتان را ثبت و ویرایش کنید، نمودار هفته را ببینید و قبل از هر کلاس یادآوری بگیرید.",
+    highlights: ["ثبت و ویرایش درس‌ها", "نمودار روز و هفته", "یادآوری قبل از کلاس"],
     primaryAction: "مشاهده برنامه",
   },
   groups: {
