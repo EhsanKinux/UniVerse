@@ -1,33 +1,6 @@
 import { moduleGroups } from "@/lib/university-data";
 import { SectionPage } from "@/components/section-page";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-
-const announcements = [
-  {
-    title: "زمان انتخاب واحد نیمسال جدید",
-    category: "آموزشی",
-    date: "شنبه ۱۶ خرداد",
-    description: "انتخاب واحد دانشجویان کارشناسی از ساعت ۸ صبح از طریق سامانه آموزشی فعال می‌شود.",
-  },
-  {
-    title: "اطلاعیه سرویس رفت‌وآمد",
-    category: "خدمات",
-    date: "یکشنبه ۱۷ خرداد",
-    description: "مسیرهای جدید سرویس دانشگاه برای خوابگاه‌ها و ایستگاه مترو به‌روزرسانی شد.",
-  },
-  {
-    title: "تمدید رزرو غذای هفته",
-    category: "دانشجویی",
-    date: "تا دوشنبه",
-    description: "مهلت رزرو و ویرایش غذای هفته آینده تا پایان روز دوشنبه تمدید شد.",
-  },
-] as const;
+import { AnnouncementsCarousel } from "@/components/home/announcements-carousel";
 
 const quickAccessModules = [
   moduleGroups.educational[0],
@@ -70,29 +43,7 @@ export default function HomeTab() {
           <span className="shrink-0 text-xs font-medium text-primary">مشاهده همه</span>
         </div>
 
-        <Carousel
-          opts={{
-            align: "start",
-            direction: "rtl",
-          }}
-          className="w-full"
-        >
-          <CarouselContent className="-ms-3">
-            {announcements.map((item) => (
-              <CarouselItem key={item.title} className="basis-[86%] ps-3">
-                <Card className="h-full p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <Badge variant="soft">{item.category}</Badge>
-                    <time className="shrink-0 text-xs text-muted-foreground">{item.date}</time>
-                  </div>
-
-                  <h3 className="mt-4 line-clamp-1 text-base font-bold text-foreground">{item.title}</h3>
-                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
+        <AnnouncementsCarousel />
       </section>
 
       <SectionPage title="دسترسی سریع" modules={quickAccessModules} variant="apps" />
