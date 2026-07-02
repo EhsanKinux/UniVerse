@@ -48,3 +48,73 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+// -----------------------------------------------------------------------------
+// Web Push — OS notifications (work even when the PWA is closed)
+// -----------------------------------------------------------------------------
+// The backend (PushService) sends an encrypted JSON payload; we render it as a
+// system notification and, on click, focus an existing tab or open a new one at
+// the target URL.
+
+interface PushPayload {
+  title?: string;
+  body?: string;
+  url?: string;
+  tag?: string;
+}
+
+self.addEventListener("push", (event) => {
+  let payload: PushPayload = {};
+  try {
+    payload = (event.data?.json() as PushPayload) ?? {};
+  } catch {
+    payload = { body: event.data?.text() };
+  }
+
+  const title = payload.title || "دانشگاه";
+  const url = payload.url || "/";
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: payload.body,
+      icon: "/icons/u-192x192.png",
+      badge: "/icons/u-192x192.png",
+      dir: "rtl",
+      lang: "fa",
+      // A tag collapses repeats of the same item into one notification.
+      tag: payload.tag,
+      data: { url },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const data = event.notification.data as { url?: string } | undefined;
+  const targetUrl = data?.url || "/";
+
+  event.waitUntil(
+    (async () => {
+      const windowClients = (await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      })) as WindowClient[];
+
+      // Focus an already-open window (and steer it to the target) if we can…
+      for (const client of windowClients) {
+        await client.focus();
+        try {
+          await client.navigate(targetUrl);
+        } catch {
+          /* navigation may be disallowed; focusing is enough */
+        }
+        return;
+      }
+
+      // …otherwise open a fresh one.
+      if (self.clients.openWindow) {
+        await self.clients.openWindow(targetUrl);
+      }
+    })(),
+  );
+});
