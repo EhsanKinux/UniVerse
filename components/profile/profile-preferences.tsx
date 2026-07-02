@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { themeOptions } from "@/lib/profile-data";
 import { getNotificationsEnabled, setNotificationsEnabled } from "@/lib/preferences";
+import { usePushNotifications } from "@/hooks/push/use-push-notifications";
 import { SectionHeading } from "./profile-ui";
 
 export function ProfilePreferences() {
@@ -19,11 +20,29 @@ export function ProfilePreferences() {
   const [notifOverride, setNotifOverride] = React.useState<boolean | null>(null);
   const storedNotif = React.useMemo(() => (mounted ? getNotificationsEnabled() : true), [mounted]);
   const notifications = notifOverride ?? storedNotif;
+  const push = usePushNotifications();
 
-  function toggleNotifications(next: boolean) {
+  async function toggleNotifications(next: boolean) {
     setNotifOverride(next);
-    setNotificationsEnabled(next);
+    setNotificationsEnabled(next); // master switch for in-app toasts
+    // Also opt this browser in/out of OS push (a no-op when unsupported).
+    if (next) await push.enable();
+    else await push.disable();
   }
+
+  // A human status line under the toggle, so the user knows exactly what's on.
+  const status = (() => {
+    if (!mounted) return "";
+    if (!notifications) return "اعلان‌ها خاموش است.";
+    if (push.busy) return "در حال به‌روزرسانی…";
+    if (!push.supported)
+      return "اعلان‌های درون‌برنامه‌ای فعال است (این مرورگر اعلان سیستمی ندارد).";
+    if (push.permission === "denied")
+      return "اعلان سیستمی در مرورگر مسدود شده؛ از تنظیمات سایت اجازه دهید.";
+    if (push.active)
+      return "اعلان درون‌برنامه‌ای و سیستمی فعال است (حتی وقتی برنامه بسته است).";
+    return "اعلان‌های درون‌برنامه‌ای فعال است.";
+  })();
 
   return (
     <section className="space-y-3">
@@ -41,16 +60,35 @@ export function ProfilePreferences() {
         <div className="border-t border-border" />
 
         {/* Notifications */}
-        <label className="flex cursor-pointer items-center gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-border bg-background">
-            <HugeiconsIcon icon={Notification03Icon} size={18} className="text-primary" />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-sm font-semibold text-foreground">اعلان‌ها</span>
-            <span className="block text-[11px] text-muted-foreground">دریافت یادآوری‌ها و اطلاعیه‌ها</span>
-          </span>
-          <Switch checked={mounted ? notifications : false} onCheckedChange={toggleNotifications} aria-label="اعلان‌ها" />
-        </label>
+        <div>
+          <label className="flex cursor-pointer items-center gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-border bg-background">
+              <HugeiconsIcon icon={Notification03Icon} size={18} className="text-primary" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-foreground">اعلان‌ها</span>
+              <span className="block text-[11px] text-muted-foreground">خبرها و اطلاعیه‌های دانشگاه</span>
+            </span>
+            <Switch
+              checked={mounted ? notifications : false}
+              onCheckedChange={(v) => void toggleNotifications(v)}
+              disabled={mounted ? push.busy : false}
+              aria-label="اعلان‌ها"
+            />
+          </label>
+          {mounted && status && (
+            <p
+              className={cn(
+                "mt-2 ps-12 text-[11px] leading-5",
+                notifications && push.permission === "denied"
+                  ? "text-destructive"
+                  : "text-muted-foreground",
+              )}
+            >
+              {status}
+            </p>
+          )}
+        </div>
       </Card>
     </section>
   );
