@@ -85,3 +85,73 @@ export interface ActiveCalendar {
   semester: ActiveSemester;
   events: CalendarEvent[];
 }
+
+// -----------------------------------------------------------------------------
+// Documents (GET /documents/:category)
+// -----------------------------------------------------------------------------
+// Mirrors univers-backend/src/documents/dto/document.dto.ts. Keep in sync with
+// the server. These back staff-managed files (e.g. the «دروس ارائه‌شده» PDF).
+
+/** One staff-managed file, pre-formatted by the server for display. */
+export interface DocumentMeta {
+  id: string;
+  category: string;
+  title: string;
+  description: string | null;
+  /** The original filename; the suggested name when downloaded. */
+  originalName: string;
+  mimeType: string;
+  /** File size in bytes. */
+  size: number;
+  /** Ready-to-show Persian size, e.g. «۴٫۲ مگابایت». */
+  sizeLabel: string;
+  /** Page count when staff provided one; null otherwise. */
+  pageCount: number | null;
+  isActive: boolean;
+  /** ISO timestamp of the last change. */
+  updatedAt: string;
+  /** Ready-to-show Persian date of the last change, e.g. «۳ تیر ۱۴۰۵». */
+  updatedAtLabel: string;
+}
+
+/** Full payload of GET /documents/:category — the active file plus the archive. */
+export interface CategoryDocuments {
+  category: string;
+  categoryLabel: string;
+  active: DocumentMeta | null;
+  archive: DocumentMeta[];
+}
+
+// -----------------------------------------------------------------------------
+// News / announcements (GET /news, SSE GET /news/stream)
+// -----------------------------------------------------------------------------
+// Mirrors univers-backend/src/news/dto/news.dto.ts. Keep in sync with the server.
+
+export type NewsCategory = "academic" | "services" | "student" | "general";
+
+/** One news item, pre-formatted by the server for display. */
+export interface NewsItem {
+  id: string;
+  title: string;
+  /** Slug; widen to string so an unknown server category never breaks the type. */
+  category: NewsCategory | string;
+  /** Persian category label, e.g. «آموزشی». */
+  categoryLabel: string;
+  body: string;
+  /** Optional "read more" link (internal route or external URL). */
+  link: string | null;
+  pinned: boolean;
+  /** ISO publish timestamp. */
+  publishedAt: string;
+  /** Ready-to-show Persian date, e.g. «شنبه ۱۶ خرداد». */
+  dateLabel: string;
+}
+
+/**
+ * One frame from the SSE stream GET /news/stream. `created`/`updated` carry the
+ * full item; `deleted` carries only its id; `ping` is a keep-alive to ignore.
+ */
+export type NewsStreamEvent =
+  | { type: "created" | "updated"; item: NewsItem }
+  | { type: "deleted"; id: string }
+  | { type: "ping" };

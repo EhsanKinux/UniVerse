@@ -10,3 +10,13 @@ export const calendarKeys = {
   all: ["calendar"] as const,
   active: () => [...calendarKeys.all, "active"] as const,
 };
+
+export const documentKeys = {
+  all: ["documents"] as const,
+  category: (category: string) => [...documentKeys.all, category] as const,
+};
+
+export const newsKeys = {
+  all: ["news"] as const,
+  list: () => [...newsKeys.all, "list"] as const,
+};
