@@ -20,3 +20,8 @@ export const newsKeys = {
   all: ["news"] as const,
   list: () => [...newsKeys.all, "list"] as const,
 };
+
+export const scheduleKeys = {
+  all: ["schedule"] as const,
+  weekly: () => [...scheduleKeys.all, "weekly"] as const,
+};

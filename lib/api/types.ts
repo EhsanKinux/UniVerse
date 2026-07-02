@@ -155,3 +155,87 @@ export type NewsStreamEvent =
   | { type: "created" | "updated"; item: NewsItem }
   | { type: "deleted"; id: string }
   | { type: "ping" };
+
+// -----------------------------------------------------------------------------
+// Weekly schedule (GET/POST/PATCH/DELETE /schedule/…) — authenticated
+// -----------------------------------------------------------------------------
+// Mirrors univers-backend/src/schedule/dto. Keep in sync with the server.
+
+/** Session kind: نظری یا عملی. */
+export type SessionType = "theory" | "practical";
+
+/** Week parity of a session: every week, odd (فرد) weeks, or even (زوج) weeks. */
+export type SessionParity = "all" | "odd" | "even";
+
+/** Palette slugs the schedule UI can render. Mirrors the backend's COURSE_COLORS. */
+export const COURSE_COLORS = [
+  "teal",
+  "sky",
+  "violet",
+  "amber",
+  "rose",
+  "emerald",
+  "indigo",
+  "fuchsia",
+] as const;
+export type CourseColor = (typeof COURSE_COLORS)[number];
+
+/** One weekly meeting of a course. Times are "HH:mm" (Tehran wall clock). */
+export interface CourseSession {
+  id: string;
+  /** 0 = شنبه … 5 = پنجشنبه. */
+  dayOfWeek: number;
+  start: string;
+  end: string;
+  room: string | null;
+  type: SessionType;
+  parity: SessionParity;
+}
+
+/** A course with its weekly sessions (sorted by day, then start time). */
+export interface Course {
+  id: string;
+  name: string;
+  professor: string | null;
+  /** Palette slug; widen to string so an unknown server value never breaks the type. */
+  color: CourseColor | string;
+  sessions: CourseSession[];
+}
+
+export interface ScheduleSettings {
+  remindersEnabled: boolean;
+  reminderLeadMinutes: number;
+  /** Parity of the current week in Tehran; null until the student declares it. */
+  currentWeekParity: "odd" | "even" | null;
+}
+
+/** Full payload of GET /schedule. */
+export interface WeeklySchedule {
+  courses: Course[];
+  settings: ScheduleSettings;
+  /** Today in Tehran: 0 = شنبه … 6 = جمعه. */
+  todayIndex: number;
+}
+
+/** Body of POST /schedule/courses and PATCH /schedule/courses/:id. */
+export interface CourseFormPayload {
+  name: string;
+  professor?: string;
+  color: string;
+  sessions: {
+    dayOfWeek: number;
+    start: string;
+    end: string;
+    room?: string;
+    type: SessionType;
+    parity: SessionParity;
+  }[];
+}
+
+/** Body of PATCH /schedule/settings — send only what changed. */
+export interface ScheduleSettingsPayload {
+  remindersEnabled?: boolean;
+  reminderLeadMinutes?: number;
+  /** Declare what THIS week is; the server derives its anchor date from it. */
+  currentWeekParity?: "odd" | "even";
+}
