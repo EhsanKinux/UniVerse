@@ -34,12 +34,6 @@ export default function manifest(): MetadataRoute.Manifest {
         icons: [{ src: "/icons/u-192x192.png", sizes: "192x192", type: "image/png" }],
       },
       {
-        name: "نمرات",
-        short_name: "نمرات",
-        url: "/grades",
-        icons: [{ src: "/icons/u-192x192.png", sizes: "192x192", type: "image/png" }],
-      },
-      {
         name: "تقویم آموزشی",
         short_name: "تقویم",
         url: "/calendar",
