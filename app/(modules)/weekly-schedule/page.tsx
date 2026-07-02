@@ -1,122 +1,219 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Clock01Icon, Location04Icon, UserIcon } from "@hugeicons/core-free-icons";
+import {
+  Add01Icon,
+  BookOpen01Icon,
+  CalendarAdd01Icon,
+  Clock01Icon,
+  GridViewIcon,
+  Login03Icon,
+  TimeScheduleIcon,
+} from "@hugeicons/core-free-icons";
 
 import { ModuleHero } from "@/components/module/module-hero";
-import { EmptyState } from "@/components/module/module-ui";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { weeklySchedule } from "@/lib/schedule-data";
+import { ErrorState, FilterChips, InfoNote } from "@/components/module/module-ui";
+import { CourseFormSheet } from "@/components/schedule/course-form-sheet";
+import { DayTimeline } from "@/components/schedule/day-timeline";
+import { ReminderSettingsCard } from "@/components/schedule/reminder-settings-card";
+import { ScheduleSkeleton } from "@/components/schedule/schedule-skeleton";
+import { WeekGrid } from "@/components/schedule/week-grid";
+import { Button } from "@/components/ui/button";
+import { useWeeklySchedule } from "@/hooks/schedule/use-weekly-schedule";
+import type { Course, SessionParity } from "@/lib/api/types";
+import { faDigits, flattenSessions, weeklyHoursLabel } from "@/lib/schedule-meta";
 import { cn } from "@/lib/utils";
 
 const HERO_TONE =
   "text-teal-600 border-teal-500/15 from-teal-500/18 via-teal-500/8 shadow-teal-500/25 dark:text-teal-300";
 
-export default function WeeklySchedulePage() {
-  const todayId = useMemo(() => weeklySchedule.find((d) => d.isToday)?.id ?? weeklySchedule[0].id, []);
-  const [activeId, setActiveId] = useState(todayId);
+type ViewMode = "day" | "week";
 
-  const activeDay = weeklySchedule.find((d) => d.id === activeId) ?? weeklySchedule[0];
-  const totalSessions = weeklySchedule.reduce((s, d) => s + d.sessions.length, 0);
+export default function WeeklySchedulePage() {
+  const { data, isPending, isError, refetch, hasSession, mounted } = useWeeklySchedule();
+
+  const [view, setView] = useState<ViewMode>("day");
+  // The user's chip choice wins; otherwise follow the declared current week.
+  const [parityOverride, setParityOverride] = useState<SessionParity | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [editingCourseId, setEditingCourseId] = useState<string | null>(null);
+
+  const courses = useMemo(() => data?.courses ?? [], [data?.courses]);
+  const sessions = useMemo(() => flattenSessions(courses), [courses]);
+  const parityView: SessionParity = parityOverride ?? data?.settings.currentWeekParity ?? "all";
+  const editingCourse: Course | null = courses.find((c) => c.id === editingCourseId) ?? null;
+
+  function openCreate() {
+    setEditingCourseId(null);
+    setSheetOpen(true);
+  }
+
+  function openEdit(courseId: string) {
+    setEditingCourseId(courseId);
+    setSheetOpen(true);
+  }
+
+  const hero = (
+    <ModuleHero
+      backHref="/student"
+      backLabel="بخش دانشجویی"
+      icon={Clock01Icon}
+      title="برنامه هفتگی"
+      description="درس‌های خودتان را ثبت کنید، برنامه روز و هفته را یکجا ببینید و قبل از هر کلاس یادآوری بگیرید."
+      status="شخصی"
+      tone={HERO_TONE}
+      stats={
+        data
+          ? [
+              { icon: BookOpen01Icon, value: faDigits(courses.length), label: "درس" },
+              { icon: Clock01Icon, value: faDigits(sessions.length), label: "جلسه در هفته" },
+              { icon: TimeScheduleIcon, value: weeklyHoursLabel(sessions), label: "ساعت در هفته" },
+            ]
+          : undefined
+      }
+    />
+  );
+
+  // ---- Auth / loading / error gates -----------------------------------------
+
+  if (!mounted) return <ScheduleSkeleton />;
+
+  if (!hasSession) {
+    return (
+      <div className="space-y-6">
+        {hero}
+        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-card/40 p-10 text-center">
+          <HugeiconsIcon icon={Login03Icon} size={40} className="mb-3 text-muted-foreground/40" />
+          <p className="text-sm font-semibold text-foreground">برنامه هفتگی مخصوص حساب شماست</p>
+          <p className="mt-1 text-xs leading-6 text-muted-foreground">
+            برای ساختن و همگام‌سازی برنامه کلاس‌هایتان ابتدا وارد شوید.
+          </p>
+          <Link
+            href="/sign-in?redirect=/weekly-schedule"
+            className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-5 text-xs font-bold text-primary-foreground transition-transform active:scale-95"
+          >
+            ورود به حساب
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (isPending) return <ScheduleSkeleton />;
+
+  if (isError || !data) {
+    return (
+      <div className="space-y-6">
+        {hero}
+        <ErrorState subtitle="برنامه هفتگی در دسترس نیست. اتصال خود را بررسی کنید." onRetry={() => void refetch()} />
+      </div>
+    );
+  }
+
+  // ---- Loaded ---------------------------------------------------------------
 
   return (
     <div className="space-y-6">
-      <ModuleHero
-        backHref="/student"
-        backLabel="بخش دانشجویی"
-        icon={Clock01Icon}
-        title="برنامه هفتگی"
-        description="برنامه کلاس‌های هفته شامل ساعت، مکان و استاد. روزها را از نوار بالا انتخاب کنید."
-        status="شخصی"
-        tone={HERO_TONE}
-        stats={[
-          { icon: Clock01Icon, value: String(totalSessions), label: "جلسه در هفته" },
-          { icon: UserIcon, value: String(weeklySchedule.length), label: "روز کلاسی" },
-        ]}
-      />
+      {hero}
 
-      {/* Day selector */}
-      <div className="grid grid-cols-5 gap-2">
-        {weeklySchedule.map((day) => {
-          const active = day.id === activeId;
-          return (
-            <button
-              key={day.id}
-              onClick={() => setActiveId(day.id)}
-              className={cn(
-                "relative flex flex-col items-center gap-1 rounded-2xl border py-3 transition-all active:scale-95",
-                active
-                  ? "border-primary/20 bg-primary/12 text-primary shadow-sm"
-                  : "border-border bg-card/70 text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <span className="flex size-7 items-center justify-center rounded-full bg-background/70 text-sm font-bold">
-                {day.short}
-              </span>
-              <span className="text-[10px] font-medium">{day.sessions.length} کلاس</span>
-              {day.isToday && (
-                <span className="absolute top-1.5 left-1.5 size-1.5 rounded-full bg-emerald-500" />
-              )}
-            </button>
-          );
-        })}
+      {/* Toolbar: view switch + add course */}
+      <div className="flex items-center gap-2">
+        <div
+          className="flex flex-1 rounded-2xl border border-border bg-card/70 p-1"
+          role="radiogroup"
+          aria-label="نمای برنامه"
+        >
+          {(
+            [
+              { value: "day", label: "روزانه", icon: TimeScheduleIcon },
+              { value: "week", label: "هفتگی", icon: GridViewIcon },
+            ] as const
+          ).map((opt) => {
+            const active = view === opt.value;
+            return (
+              <button
+                key={opt.value}
+                role="radio"
+                aria-checked={active}
+                onClick={() => setView(opt.value)}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-bold transition-all",
+                  active ? "bg-primary/12 text-primary shadow-sm" : "text-muted-foreground",
+                )}
+              >
+                <HugeiconsIcon icon={opt.icon} size={15} />
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+        <Button onClick={openCreate} className="h-[42px] rounded-2xl px-4 text-xs font-bold">
+          <HugeiconsIcon icon={Add01Icon} data-icon="inline-start" />
+          افزودن درس
+        </Button>
       </div>
 
-      <section id="content" className="space-y-3">
-        <div className="flex items-center gap-2 px-1">
-          <h2 className="text-lg font-bold text-foreground">{activeDay.label}</h2>
-          {activeDay.isToday && (
-            <Badge variant="success" className="px-2.5 py-0.5 text-[11px]">
-              امروز
-            </Badge>
-          )}
+      {courses.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-card/40 p-10 text-center">
+          <HugeiconsIcon icon={CalendarAdd01Icon} size={40} className="mb-3 text-muted-foreground/40" />
+          <p className="text-sm font-semibold text-foreground">هنوز درسی ثبت نکرده‌اید</p>
+          <p className="mt-1 text-xs leading-6 text-muted-foreground">
+            اولین درس را اضافه کنید تا نمودار هفتگی و یادآوری کلاس‌ها فعال شود.
+          </p>
+          <Button onClick={openCreate} className="mt-4 rounded-full px-5 text-xs font-bold">
+            <HugeiconsIcon icon={Add01Icon} data-icon="inline-start" />
+            افزودن اولین درس
+          </Button>
         </div>
+      ) : (
+        <>
+          {/* Parity filter */}
+          <FilterChips
+            options={[
+              { value: "all" as const, label: "همه هفته‌ها" },
+              {
+                value: "odd" as const,
+                label: data.settings.currentWeekParity === "odd" ? "هفته فرد (این هفته)" : "هفته فرد",
+              },
+              {
+                value: "even" as const,
+                label: data.settings.currentWeekParity === "even" ? "هفته زوج (این هفته)" : "هفته زوج",
+              },
+            ]}
+            value={parityView}
+            onChange={(v) => setParityOverride(v)}
+          />
 
-        {activeDay.sessions.length === 0 ? (
-          <EmptyState icon={Clock01Icon} title="کلاسی در این روز ندارید" subtitle="روز دیگری را انتخاب کنید" />
-        ) : (
-          <div className="space-y-3">
-            {activeDay.sessions.map((session) => (
-              <Card key={session.id} className="flex gap-3 overflow-hidden p-4">
-                {/* time rail */}
-                <div className="flex shrink-0 flex-col items-center">
-                  <span className="font-mono text-sm font-bold text-foreground">{session.start}</span>
-                  <span className="my-1 w-px flex-1 bg-border" />
-                  <span className="font-mono text-xs text-muted-foreground">{session.end}</span>
-                </div>
+          <section id="content">
+            {view === "day" ? (
+              <DayTimeline
+                sessions={sessions}
+                parityView={parityView}
+                todayIndex={data.todayIndex}
+                onEditCourse={openEdit}
+              />
+            ) : (
+              <WeekGrid
+                sessions={sessions}
+                parityView={parityView}
+                todayIndex={data.todayIndex}
+                onSelectCourse={openEdit}
+              />
+            )}
+          </section>
+        </>
+      )}
 
-                <div className="min-w-0 flex-1 border-r border-border pr-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-base font-bold leading-6 text-foreground">{session.course}</h3>
-                    <span
-                      className={cn(
-                        "shrink-0 rounded-lg px-2 py-0.5 text-[10px] font-medium",
-                        session.type === "عملی"
-                          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                          : "bg-primary/10 text-primary",
-                      )}
-                    >
-                      {session.type}
-                    </span>
-                  </div>
-                  <div className="mt-2 space-y-1 text-sm">
-                    <p className="flex items-center gap-1.5 text-muted-foreground">
-                      <HugeiconsIcon icon={UserIcon} size={14} className="text-primary/70" />
-                      {session.professor}
-                    </p>
-                    <p className="flex items-center gap-1.5 text-muted-foreground">
-                      <HugeiconsIcon icon={Location04Icon} size={14} className="text-primary/70" />
-                      {session.room}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </section>
+      <ReminderSettingsCard settings={data.settings} />
+
+      <InfoNote title="فقط برای شما">
+        برنامه هفتگی به حساب کاربری شما گره خورده و روی همه دستگاه‌هایتان همگام می‌شود. یادآوری کلاس‌ها به‌صورت
+        اعلان سیستمی ارسال می‌شود؛ برای دریافت آن کافی است یک بار اجازه اعلان را فعال کنید.
+      </InfoNote>
+
+      <CourseFormSheet open={sheetOpen} onOpenChange={setSheetOpen} course={editingCourse} />
     </div>
   );
 }

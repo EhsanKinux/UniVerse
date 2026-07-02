@@ -5,7 +5,7 @@ import { AnnouncementsCarousel } from "@/components/home/announcements-carousel"
 const quickAccessModules = [
   moduleGroups.educational[0],
   moduleGroups.educational[1],
-  moduleGroups.educational[3],
+  moduleGroups.educational[2],
   moduleGroups.services[0],
   moduleGroups.services[1],
   moduleGroups.student[0],
