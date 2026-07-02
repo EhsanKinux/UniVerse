@@ -84,15 +84,17 @@ export function MobileShell({
             className="pointer-events-none absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-white/70 to-transparent dark:via-white/25"
           />
 
-          {/* Sliding active indicator. App is RTL, so array index 0 sits at the
-              far right — translate from the inline-start (physical left) edge. */}
+          {/* Sliding active indicator. App is RTL: `start-0` pins it to the
+              physical RIGHT edge, under array index 0. translateX is always
+              physical (unaffected by direction), so each step through the
+              array moves one slot to the LEFT — hence the negative sign. */}
           <span
             aria-hidden
             className={cn(
               "absolute inset-y-1.5 start-0 z-0 w-1/4 px-1.5 transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
               activeIndex < 0 && "opacity-0",
             )}
-            style={{ transform: `translateX(${(bottomTabs.length - 1 - Math.max(activeIndex, 0)) * 100}%)` }}
+            style={{ transform: `translateX(-${Math.max(activeIndex, 0) * 100}%)` }}
           >
             <span className="block size-full rounded-3xl border border-primary/20 bg-primary/12 shadow-sm" />
           </span>
