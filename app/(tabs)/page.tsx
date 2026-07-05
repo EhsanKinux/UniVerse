@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { moduleGroups } from "@/lib/university-data";
 import { SectionPage } from "@/components/section-page";
 import { AnnouncementsCarousel } from "@/components/home/announcements-carousel";
@@ -40,7 +42,9 @@ export default function HomeTab() {
             <p className="mt-1 text-sm text-muted-foreground">آخرین پیام‌های مهم دانشگاه</p>
           </div>
 
-          <span className="shrink-0 text-xs font-medium text-primary">مشاهده همه</span>
+          <Link href="/news" className="shrink-0 text-xs font-medium text-primary transition-colors hover:text-primary/80">
+            مشاهده همه
+          </Link>
         </div>
 
         <AnnouncementsCarousel />
