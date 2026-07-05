@@ -30,6 +30,92 @@ export interface RegisterPayload {
   name?: string;
 }
 
+// -----------------------------------------------------------------------------
+// Profile (GET/PATCH /profile, avatar upload) — authenticated
+// -----------------------------------------------------------------------------
+// Mirrors univers-backend/src/profile/dto. Keep in sync with the server.
+
+export type ProfileGender = "male" | "female";
+export type ProfileDegree = "associate" | "bachelor" | "master" | "phd";
+
+/** The level tier a student reaches from their score. */
+export interface ProfileLevel {
+  key: string;
+  label: string;
+}
+
+/** Score / completion summary — drives the ring, point badge and level. */
+export interface ProfileCompletion {
+  score: number;
+  maxScore: number;
+  /** 0-100. */
+  percent: number;
+  filledCount: number;
+  totalCount: number;
+  level: ProfileLevel;
+  /** Which scored fields are complete, keyed by scored-field id. */
+  filled: Record<string, boolean>;
+}
+
+/** Full payload of GET /profile — identity + profile fields + completion. */
+export interface ProfileData {
+  id: string;
+  email: string;
+  name: string | null;
+  createdAt: string;
+
+  // personal
+  phone: string | null;
+  nationalId: string | null;
+  birthDate: string | null;
+  gender: string | null;
+  province: string | null;
+  city: string | null;
+
+  // academic
+  studentId: string | null;
+  major: string | null;
+  faculty: string | null;
+  degree: string | null;
+  entryYear: number | null;
+  advisor: string | null;
+
+  // bio & emergency
+  bio: string | null;
+  emergencyName: string | null;
+  emergencyPhone: string | null;
+  telegram: string | null;
+
+  /** Relative URL (with a cache-busting ?v=) to stream the avatar, or null. */
+  avatarUrl: string | null;
+
+  completion: ProfileCompletion;
+}
+
+/**
+ * Body of PATCH /profile — send only what changed. `null` (or "") clears a field
+ * and its points; omit a field to leave it unchanged.
+ */
+export interface UpdateProfilePayload {
+  name?: string | null;
+  phone?: string | null;
+  nationalId?: string | null;
+  birthDate?: string | null;
+  gender?: string | null;
+  province?: string | null;
+  city?: string | null;
+  studentId?: string | null;
+  major?: string | null;
+  faculty?: string | null;
+  degree?: string | null;
+  entryYear?: number | null;
+  advisor?: string | null;
+  bio?: string | null;
+  emergencyName?: string | null;
+  emergencyPhone?: string | null;
+  telegram?: string | null;
+}
+
 /** Shape of a NestJS error body (from HttpException / ValidationPipe). */
 export interface ApiErrorBody {
   statusCode: number;
@@ -123,6 +209,40 @@ export interface CategoryDocuments {
 }
 
 // -----------------------------------------------------------------------------
+// Educational chart / چارت آموزشی (GET /chart)
+// -----------------------------------------------------------------------------
+// Mirrors univers-backend/src/chart/dto/chart.dto.ts. Keep in sync with the
+// server. A department (رشته) carries one or more downloadable chart PDFs.
+
+/** One downloadable chart PDF. Build its URL with `chartApi.fileUrl(id)`. */
+export interface ChartFile {
+  id: string;
+  title: string;
+  /** Optional era/entry-year pill, e.g. «قبل ۱۴۰۳». Null when none. */
+  badge: string | null;
+  /** The original filename; the suggested name when downloaded. */
+  originalName: string;
+  mimeType: string;
+  /** File size in bytes. */
+  size: number;
+  /** Ready-to-show Persian size, e.g. «۵۰۰ کیلوبایت». */
+  sizeLabel: string;
+}
+
+/** One department with its chart PDFs — the shape the PWA renders as a card. */
+export interface ChartDepartment {
+  id: string;
+  /** Stable colour-token key + React list key, e.g. "computer". */
+  slug: string;
+  title: string;
+  /** Emoji shown in the card avatar, e.g. "💻". */
+  icon: string;
+  /** Colour slug; widen to string so an unknown server value never breaks the type. */
+  color: string;
+  files: ChartFile[];
+}
+
+// -----------------------------------------------------------------------------
 // News / announcements (GET /news, SSE GET /news/stream)
 // -----------------------------------------------------------------------------
 // Mirrors univers-backend/src/news/dto/news.dto.ts. Keep in sync with the server.
@@ -145,6 +265,27 @@ export interface NewsItem {
   publishedAt: string;
   /** Ready-to-show Persian date, e.g. «شنبه ۱۶ خرداد». */
   dateLabel: string;
+  /** Whether this item has a cover image (stream it via `newsApi.coverUrl`). */
+  hasCover: boolean;
+  /** How many files are attached to this item. */
+  attachmentCount: number;
+}
+
+/** One file attached to a news item. Build its URL with `newsApi.attachmentUrl(id)`. */
+export interface NewsAttachment {
+  id: string;
+  /** Original filename; the suggested name when downloaded. */
+  originalName: string;
+  mimeType: string;
+  /** File size in bytes. */
+  size: number;
+  /** Ready-to-show Persian size, e.g. «۵۰۰ کیلوبایت». */
+  sizeLabel: string;
+}
+
+/** Full payload of GET /news/:id — the list fields plus the attachments list. */
+export interface NewsDetail extends NewsItem {
+  attachments: NewsAttachment[];
 }
 
 /**

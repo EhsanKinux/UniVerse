@@ -20,4 +20,12 @@ export const authApi = {
   getMe(): Promise<User> {
     return apiClient.get<User>("/auth/me").then((res) => res.data);
   },
+
+  /** Permanently delete the account. Requires the current password to confirm. */
+  deleteAccount(password: string): Promise<{ success: boolean }> {
+    // DELETE carries a body here (the password confirmation) via axios `data`.
+    return apiClient
+      .delete<{ success: boolean }>("/auth/me", { data: { password } })
+      .then((res) => res.data);
+  },
 };
