@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 import { authApi } from "@/lib/api/auth.api";
 import { tokenStorage } from "@/lib/api/token-storage";
-import { clearLocalProfile } from "@/lib/local-profile";
 
 /**
  * Logs out. The server call revokes the refresh token; we then clear local
@@ -20,7 +19,6 @@ export function useLogout() {
     mutationFn: authApi.logout,
     onSettled: () => {
       tokenStorage.clearTokens();
-      clearLocalProfile();
       queryClient.clear();
       router.replace("/sign-in");
     },
