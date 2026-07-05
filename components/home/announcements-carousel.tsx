@@ -1,12 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Megaphone01Icon } from "@hugeicons/core-free-icons";
+import { Attachment01Icon, Image01Icon, Megaphone01Icon } from "@hugeicons/core-free-icons";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { useNews } from "@/hooks/news/use-news";
+import { toPersianDigits } from "@/lib/utils";
 
 /**
  * The home-page «اخبار و اطلاعیه‌ها» carousel, fed live by GET /news. The SSE
@@ -35,15 +37,36 @@ export function AnnouncementsCarousel() {
       <CarouselContent className="-ms-3">
         {items.map((item) => (
           <CarouselItem key={item.id} className="basis-[86%] ps-3">
-            <Card className="h-full p-4">
-              <div className="flex items-center justify-between gap-3">
-                <Badge variant="soft">{item.categoryLabel}</Badge>
-                <time className="shrink-0 text-xs text-muted-foreground">{item.dateLabel}</time>
-              </div>
+            <Link
+              href={`/news/${item.id}`}
+              className="block h-full transition-transform active:scale-[0.99]"
+            >
+              <Card className="flex h-full flex-col p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <Badge variant="soft">{item.categoryLabel}</Badge>
+                  <time className="shrink-0 text-xs text-muted-foreground">{item.dateLabel}</time>
+                </div>
 
-              <h3 className="mt-4 line-clamp-1 text-base font-bold text-foreground">{item.title}</h3>
-              <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{item.body}</p>
-            </Card>
+                <h3 className="mt-4 line-clamp-1 text-base font-bold text-foreground">{item.title}</h3>
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{item.body}</p>
+
+                {(item.hasCover || item.attachmentCount > 0) && (
+                  <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+                    {item.hasCover && (
+                      <span className="inline-flex items-center gap-1">
+                        <HugeiconsIcon icon={Image01Icon} size={13} /> تصویر
+                      </span>
+                    )}
+                    {item.attachmentCount > 0 && (
+                      <span className="inline-flex items-center gap-1">
+                        <HugeiconsIcon icon={Attachment01Icon} size={13} />
+                        {toPersianDigits(item.attachmentCount)} پیوست
+                      </span>
+                    )}
+                  </div>
+                )}
+              </Card>
+            </Link>
           </CarouselItem>
         ))}
       </CarouselContent>
