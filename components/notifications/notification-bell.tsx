@@ -106,14 +106,15 @@ function NotificationRow({ notification: n }: { notification: AppNotification })
     </div>
   );
 
-  if (!n.link) return content;
+  // No explicit link → deep-link to the item's detail page.
+  const href = n.link ?? `/news/${n.newsId}`;
 
-  return isExternalLink(n.link) ? (
-    <a href={n.link} target="_blank" rel="noopener noreferrer" className="block">
+  return isExternalLink(href) ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className="block">
       {content}
     </a>
   ) : (
-    <Link href={n.link} className="block">
+    <Link href={href} className="block">
       {content}
     </Link>
   );

@@ -91,24 +91,23 @@ function ToastCard({
     </div>
   );
 
-  // A linked toast is tappable; tapping dismisses it and navigates.
-  if (item.link) {
-    return isExternalLink(item.link) ? (
-      <a
-        href={item.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={dismiss}
-        className={cardClass}
-      >
-        {inner}
-      </a>
-    ) : (
-      <Link href={item.link} onClick={dismiss} className={cardClass}>
-        {inner}
-      </Link>
-    );
-  }
+  // Every toast is tappable; it dismisses and navigates. With no explicit link,
+  // it deep-links to the item's detail page.
+  const href = item.link ?? `/news/${item.id}`;
 
-  return <div className={cardClass}>{inner}</div>;
+  return isExternalLink(href) ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={dismiss}
+      className={cardClass}
+    >
+      {inner}
+    </a>
+  ) : (
+    <Link href={href} onClick={dismiss} className={cardClass}>
+      {inner}
+    </Link>
+  );
 }
