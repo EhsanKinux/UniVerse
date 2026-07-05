@@ -19,3 +19,14 @@ const PERSIAN_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "�
 export function toPersianDigits(value: number | string): string {
   return String(value).replace(/\d/g, (d) => PERSIAN_DIGITS[Number(d)])
 }
+
+/**
+ * Convert Persian (۰-۹) and Arabic-Indic (٠-٩) digits to ASCII (0-9). Used before
+ * sending numeric fields (phone, national id, …) to the API, which validates
+ * ASCII digits.
+ */
+export function toEnglishDigits(value: string): string {
+  return value
+    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
+    .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
+}

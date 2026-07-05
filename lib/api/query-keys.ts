@@ -16,12 +16,23 @@ export const documentKeys = {
   category: (category: string) => [...documentKeys.all, category] as const,
 };
 
+export const chartKeys = {
+  all: ["chart"] as const,
+  list: () => [...chartKeys.all, "list"] as const,
+};
+
 export const newsKeys = {
   all: ["news"] as const,
   list: () => [...newsKeys.all, "list"] as const,
+  detail: (id: string) => [...newsKeys.all, "detail", id] as const,
 };
 
 export const scheduleKeys = {
   all: ["schedule"] as const,
   weekly: () => [...scheduleKeys.all, "weekly"] as const,
+};
+
+export const profileKeys = {
+  all: ["profile"] as const,
+  me: () => [...profileKeys.all, "me"] as const,
 };
