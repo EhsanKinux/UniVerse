@@ -26,7 +26,7 @@ import { useProfile, useLogout } from "@/hooks/auth";
 export function ProfileMenu() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
-  const { name, email, initials, mounted } = useProfile();
+  const { name, email, initials, avatarSrc, mounted } = useProfile();
   const logout = useLogout();
 
   function handleSignOut() {
@@ -41,7 +41,7 @@ export function ProfileMenu() {
         aria-label="منوی کاربر"
       >
         <Avatar className="size-10 border border-border shadow-sm">
-          <AvatarImage src={undefined} alt={name} />
+          <AvatarImage src={mounted ? avatarSrc : undefined} alt={name} />
           <AvatarFallback className="bg-primary/12 text-sm font-bold text-primary">
             {mounted ? initials : ""}
           </AvatarFallback>
@@ -53,6 +53,7 @@ export function ProfileMenu() {
         {/* Identity */}
         <div className="flex items-center gap-3 p-2">
           <Avatar className="size-10">
+            <AvatarImage src={mounted ? avatarSrc : undefined} alt={name} />
             <AvatarFallback className="bg-primary/12 text-sm font-bold text-primary">
               {mounted ? initials : ""}
             </AvatarFallback>
