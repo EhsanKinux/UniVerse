@@ -2,24 +2,14 @@ import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 
-import { Card } from "@/components/ui/card";
-import { academicStats, quickLinks } from "@/lib/profile-data";
+import { quickLinks } from "@/lib/profile-data";
 import { SectionHeading } from "./profile-ui";
 
-export function ProfileAcademicSnapshot() {
+/** Shortcuts from the profile to the student's own pages. */
+export function ProfileQuickLinks() {
   return (
     <section className="space-y-3">
-      <SectionHeading title="وضعیت تحصیلی" />
-
-      <div className="grid grid-cols-3 gap-2.5">
-        {academicStats.map((stat) => (
-          <Card key={stat.key} className="p-3 text-center">
-            <p className="text-xl font-black tracking-tight text-foreground">{stat.value}</p>
-            <p className="mt-1 truncate text-[10px] font-medium text-muted-foreground">{stat.label}</p>
-          </Card>
-        ))}
-      </div>
-
+      <SectionHeading title="میان‌برها" />
       <div className="grid grid-cols-2 gap-2.5">
         {quickLinks.map((link) => (
           <Link
