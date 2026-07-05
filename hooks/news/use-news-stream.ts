@@ -46,8 +46,9 @@ export function useNewsStream(onCreated?: (item: NewsItem) => void) {
 
       if (payload.type === "ping") return; // keep-alive heartbeat
 
-      // Any change refreshes the cached list → the carousel updates live.
-      void queryClient.invalidateQueries({ queryKey: newsKeys.list() });
+      // Any change refreshes every news query (the list AND any open detail
+      // page) → the carousel and detail views update live.
+      void queryClient.invalidateQueries({ queryKey: newsKeys.all });
 
       if (payload.type === "created") {
         onCreatedRef.current?.(payload.item);
