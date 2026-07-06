@@ -1,35 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { OnboardingFlow } from "@/components/onboarding/onboarding-flow";
+import { useMounted } from "@/hooks/use-mounted";
+import { markOnboardingSeen, useHasSeenOnboarding } from "@/lib/onboarding";
 
-const KEY = "universe_onboarding_seen_v1";
-
+/**
+ * Shows the one-time intro before letting the app shell through. `seen` is a
+ * reactive read of the device-level onboarding flag, so a session teardown that
+ * calls `resetOnboarding` (logout / delete account) re-shows the intro even
+ * though this gate lives in the persistent root layout and never re-mounts.
+ */
 export function FirstLaunchGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const mounted = useMounted();
+  const seen = useHasSeenOnboarding();
 
-  useEffect(() => {
-    const seen = localStorage.getItem(KEY);
+  // Pre-hydration we can't read localStorage; render nothing rather than flash
+  // the wrong screen.
+  if (!mounted) return null;
 
-    if (!seen) {
-      setShowOnboarding(true);
-    }
-
-    setReady(true);
-  }, []);
-
-  if (!ready) return null;
-
-  if (showOnboarding) {
+  if (!seen) {
     return (
       <OnboardingFlow
         onFinish={() => {
-          localStorage.setItem(KEY, "1");
-          setShowOnboarding(false);
-
+          markOnboardingSeen();
           router.replace("/sign-in");
         }}
       />

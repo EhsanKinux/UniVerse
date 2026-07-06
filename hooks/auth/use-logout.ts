@@ -1,10 +1,9 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 
 import { authApi } from "@/lib/api/auth.api";
-import { tokenStorage } from "@/lib/api/token-storage";
+import { useClearSession } from "./use-clear-session";
 
 /**
  * Logs out. The server call revokes the refresh token; we then clear local
@@ -12,15 +11,10 @@ import { tokenStorage } from "@/lib/api/token-storage";
  * user out locally.
  */
 export function useLogout() {
-  const queryClient = useQueryClient();
-  const router = useRouter();
+  const clearSession = useClearSession();
 
   return useMutation({
     mutationFn: authApi.logout,
-    onSettled: () => {
-      tokenStorage.clearTokens();
-      queryClient.clear();
-      router.replace("/sign-in");
-    },
+    onSettled: () => clearSession(),
   });
 }

@@ -5,4 +5,5 @@ export { useLogin } from "./use-login";
 export { useRegister } from "./use-register";
 export { useLogout } from "./use-logout";
 export { useDeleteAccount } from "./use-delete-account";
+export { useClearSession } from "./use-clear-session";
 export { useProfile } from "./use-profile";
