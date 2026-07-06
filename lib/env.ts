@@ -1,23 +1,20 @@
-// Centralized, typed access to public environment variables.
-// `NEXT_PUBLIC_*` values are inlined at build time, so they're safe to read in
-// both server and client components.
+// Centralized, typed access to environment configuration.
+//
+// The browser never talks to the backend directly. It calls THIS app's own
+// origin under `apiBaseUrl` (default `/api`), and the Next.js server proxies
+// those requests to the real backend (see `rewrites()` + `BACKEND_ORIGIN` in
+// next.config.ts). Benefits: the backend stays private on loopback, there's no
+// CORS, and the backend address is configured server-side instead of being
+// frozen into the client bundle at build time.
 
 function readApiBaseUrl(): string {
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL;
+  // `NEXT_PUBLIC_*` is inlined at build time, so we default to a same-origin,
+  // deployment-independent prefix — nothing environment-specific gets baked in.
+  // Override only if the API is served from a separate public origin.
+  const raw = process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || "/api";
 
-  if (!url) {
-    // The backend defaults to http://localhost:3001 in development. In production
-    // this must be set explicitly, so surface a warning if it's missing.
-    if (process.env.NODE_ENV === "production") {
-      console.warn(
-        "[env] NEXT_PUBLIC_API_BASE_URL is not set — falling back to http://localhost:3001",
-      );
-    }
-    return "http://localhost:3001";
-  }
-
-  // Strip a trailing slash so callers can safely build `${apiBaseUrl}/auth/login`.
-  return url.replace(/\/+$/, "");
+  // Strip trailing slashes so callers can safely build `${apiBaseUrl}/auth/login`.
+  return raw.replace(/\/+$/, "");
 }
 
 export const env = {

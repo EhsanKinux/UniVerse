@@ -1,6 +1,12 @@
 import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { CacheableResponsePlugin, ExpirationPlugin, Serwist, StaleWhileRevalidate } from "serwist";
+import {
+  CacheableResponsePlugin,
+  ExpirationPlugin,
+  NetworkOnly,
+  Serwist,
+  StaleWhileRevalidate,
+} from "serwist";
 
 // This declares the value of `injectionPoint` to TypeScript.
 // `injectionPoint` is the string that will be replaced by the
@@ -20,10 +26,11 @@ const serwist = new Serwist({
   navigationPreload: true,
   runtimeCaching: [
     {
-      // Academic calendar (cross-origin API GET). Stale-while-revalidate keeps the
-      // last-known calendar available offline while it refreshes in the background.
+      // Academic calendar (same-origin, proxied to the backend under /api).
+      // Stale-while-revalidate keeps the last-known calendar available offline
+      // while it refreshes in the background.
       matcher: ({ url, request }) =>
-        request.method === "GET" && url.pathname === "/calendar/active",
+        request.method === "GET" && url.pathname === "/api/calendar/active",
       handler: new StaleWhileRevalidate({
         cacheName: "calendar-active",
         plugins: [
@@ -31,6 +38,12 @@ const serwist = new Serwist({
           new ExpirationPlugin({ maxEntries: 8, maxAgeSeconds: 24 * 60 * 60 }),
         ],
       }),
+    },
+    {
+      // Everything else under /api is live data (and the news SSE stream) — never
+      // cache it, so the SW can't serve a stale API response or buffer the stream.
+      matcher: ({ url }) => url.pathname.startsWith("/api/"),
+      handler: new NetworkOnly(),
     },
     ...defaultCache,
   ],
