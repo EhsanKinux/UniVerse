@@ -11,7 +11,7 @@ import type { NextConfig } from "next";
 // NOTE: `rewrites()` is evaluated when `next build` / `next dev` runs (the result
 // is baked into the routes manifest), so to override the default you must set
 // BACKEND_ORIGIN *before building* — not merely in the pm2 runtime env.
-const BACKEND_ORIGIN = (process.env.BACKEND_ORIGIN ?? "http://127.0.0.1:3002").replace(/\/+$/, "");
+const BACKEND_ORIGIN = (process.env.BACKEND_ORIGIN ?? "http://127.0.0.1:3001").replace(/\/+$/, "");
 
 const nextConfig: NextConfig = {
   // Bare hostnames only — Next strips protocol/port from the request Origin
