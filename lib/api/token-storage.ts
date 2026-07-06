@@ -7,17 +7,27 @@ import type { AuthResponse } from "./types";
 //
 // Trade-off: the API delivers tokens in the JSON body and expects them back in
 // the `Authorization` header, so these cookies are NOT httpOnly (JS must read
-// them). We mitigate with `sameSite=lax` + `secure` in production. The refresh
-// token is still only ever held as a SHA-256 hash on the server side.
+// them). We mitigate with `sameSite=lax` + `secure` on HTTPS. The refresh token
+// is still only ever held as a SHA-256 hash on the server side.
 
-const cookieOptions: Cookies.CookieAttributes = {
+// Whether the page is being served over HTTPS. Basing the cookie's `Secure`
+// flag on the live connection — not NODE_ENV — is exactly the condition the
+// browser enforces: a `Secure` cookie is rejected on an HTTP page. So a
+// production build served over plain HTTP (e.g. a localhost/LAN demo before TLS
+// is set up) still works, while any HTTPS deployment gets `Secure` automatically.
+// Guard `window` so the module is safe to import in a server context (js-cookie
+// itself only ever runs in the browser).
+const isHttps = () =>
+  typeof window !== "undefined" && window.location.protocol === "https:";
+
+const cookieOptions = (): Cookies.CookieAttributes => ({
   // Bounded by the refresh-token lifetime (backend: 7d). The access token still
   // expires server-side after 15m regardless — the interceptor refreshes it.
   expires: 7,
   sameSite: "lax",
-  secure: process.env.NODE_ENV === "production",
+  secure: isHttps(),
   path: "/",
-};
+});
 
 export const tokenStorage = {
   getAccessToken(): string | null {
@@ -29,8 +39,8 @@ export const tokenStorage = {
   },
 
   setTokens({ accessToken, refreshToken }: Pick<AuthResponse, "accessToken" | "refreshToken">): void {
-    Cookies.set(ACCESS_TOKEN_COOKIE, accessToken, cookieOptions);
-    Cookies.set(REFRESH_TOKEN_COOKIE, refreshToken, cookieOptions);
+    Cookies.set(ACCESS_TOKEN_COOKIE, accessToken, cookieOptions());
+    Cookies.set(REFRESH_TOKEN_COOKIE, refreshToken, cookieOptions());
   },
 
   clearTokens(): void {
