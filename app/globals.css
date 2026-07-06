@@ -195,6 +195,9 @@ html {
 body {
   /* Block pull-to-refresh and overscroll glow/bounce. */
   overscroll-behavior: none;
+  /* Horizontal-overflow safety net: never let the shell scroll or clip
+     sideways if a child is momentarily wider than the viewport. */
+  overflow-x: clip;
   /* No iOS long-press callout bubble on links/images. */
   -webkit-touch-callout: none;
   /* UI chrome shouldn't be selectable like an article. */
