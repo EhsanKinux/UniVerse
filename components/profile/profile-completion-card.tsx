@@ -6,7 +6,7 @@ import { SparklesIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { Card } from "@/components/ui/card";
 import { toPersianDigits } from "@/lib/utils";
 import type { ProfileData } from "@/lib/api/types";
-import { AVATAR_ICON, AVATAR_POINTS, allScoredFields } from "@/lib/profile-fields";
+import { AVATAR_ICON, AVATAR_POINTS, allScoredFields } from "@/lib/meta/profile-fields";
 
 /**
  * The gamified header of the profile: a completion ring, the point score + level

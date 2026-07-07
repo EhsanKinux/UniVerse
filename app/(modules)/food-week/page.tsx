@@ -7,7 +7,7 @@ import { CheckmarkCircle02Icon, Coffee01Icon, RiceBowlIcon, Sun01Icon } from "@h
 import { ModuleHero } from "@/components/module/module-hero";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { foodWeek, type Meal } from "@/lib/food-data";
+import { foodWeek, type Meal } from "@/lib/data/food-data";
 import { cn } from "@/lib/utils";
 
 const HERO_TONE =

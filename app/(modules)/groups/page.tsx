@@ -4,7 +4,7 @@ import { LinkSquare01Icon, UserGroupIcon, UserMultipleIcon } from "@hugeicons/co
 import { ModuleHero } from "@/components/module/module-hero";
 import { SectionHeading } from "@/components/module/module-ui";
 import { Card } from "@/components/ui/card";
-import { groupCategories, platformMeta } from "@/lib/groups-data";
+import { groupCategories, platformMeta } from "@/lib/data/groups-data";
 import { cn } from "@/lib/utils";
 
 const HERO_TONE =

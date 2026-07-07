@@ -3,7 +3,7 @@ import { Calendar03Icon, UserGroup03Icon } from "@hugeicons/core-free-icons";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { categoryMeta } from "@/lib/calendar-meta";
+import { categoryMeta } from "@/lib/meta/calendar-meta";
 import type { CalendarEvent } from "@/lib/api/types";
 import { cn, toPersianDigits } from "@/lib/utils";
 

@@ -13,7 +13,7 @@ import {
   toMinutes,
   WEEK_DAYS,
   type FlatSession,
-} from "@/lib/schedule-meta";
+} from "@/lib/meta/schedule-meta";
 import { cn } from "@/lib/utils";
 
 /** Pixel height of one hour on the chart. */

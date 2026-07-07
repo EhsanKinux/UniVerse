@@ -2,7 +2,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Building05Icon, LinkSquare01Icon } from "@hugeicons/core-free-icons";
 
 import { ModuleHero } from "@/components/module/module-hero";
-import { systems } from "@/lib/systems-data";
+import { systems } from "@/lib/data/systems-data";
 import { cn } from "@/lib/utils";
 
 const HERO_TONE =

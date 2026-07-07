@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 import { tokenStorage } from "@/lib/api/token-storage";
-import { resetOnboarding } from "@/lib/onboarding";
+import { resetOnboarding } from "@/lib/storage/onboarding";
 
 /**
  * Tears down all client-side session state — auth tokens, cached queries, and

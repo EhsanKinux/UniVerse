@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { moduleGroups } from "@/lib/university-data";
-import { SectionPage } from "@/components/section-page";
+import { moduleGroups } from "@/lib/data/university-data";
+import { SectionPage } from "@/components/layout/section-page";
 import { AnnouncementsCarousel } from "@/components/home/announcements-carousel";
 import { TodayClassesCard } from "@/components/home/today-classes-card";
 

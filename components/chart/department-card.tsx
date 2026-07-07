@@ -6,7 +6,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 import { chartApi } from "@/lib/api/chart.api";
 import type { ChartDepartment } from "@/lib/api/types";
-import { departmentTone } from "@/lib/chart-meta";
+import { departmentTone } from "@/lib/meta/chart-meta";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 

@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 import { useMounted } from "@/hooks/use-mounted";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { themeOptions } from "@/lib/profile-data";
-import { getNotificationsEnabled, setNotificationsEnabled } from "@/lib/preferences";
+import { themeOptions } from "@/lib/data/profile-data";
+import { getNotificationsEnabled, setNotificationsEnabled } from "@/lib/storage/preferences";
 import { usePushNotifications } from "@/hooks/push/use-push-notifications";
 import { SectionHeading } from "./profile-ui";
 

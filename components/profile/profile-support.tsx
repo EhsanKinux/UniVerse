@@ -1,7 +1,7 @@
 import { CallIcon, InformationCircleIcon, Mail01Icon } from "@hugeicons/core-free-icons";
 
 import { Card } from "@/components/ui/card";
-import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_PHONE, SUPPORT_PHONE_DISPLAY } from "@/lib/profile-data";
+import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_PHONE, SUPPORT_PHONE_DISPLAY } from "@/lib/data/profile-data";
 import { ActionRow, InfoRow, SectionHeading } from "./profile-ui";
 
 export function ProfileSupportCard() {

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { COURSE_COLORS } from "@/lib/api/types";
-import { toMinutes } from "@/lib/schedule-meta";
+import { toMinutes } from "@/lib/meta/schedule-meta";
 
 // Validation for the add/edit-course form. Messages are in Persian to match the
 // UI. Mirrors the backend DTO rules (univers-backend/src/schedule/dto):

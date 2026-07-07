@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { usePushNotifications } from "@/hooks/push/use-push-notifications";
 import { useUpdateScheduleSettings } from "@/hooks/schedule/use-schedule-settings";
 import type { ScheduleSettings } from "@/lib/api/types";
-import { faDigits } from "@/lib/schedule-meta";
+import { faDigits } from "@/lib/meta/schedule-meta";
 import { cn } from "@/lib/utils";
 
 const LEAD_OPTIONS = [5, 10, 15, 30, 60] as const;

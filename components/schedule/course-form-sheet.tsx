@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet } from "@/components/ui/sheet";
 import { useCourseMutations } from "@/hooks/schedule/use-course-mutations";
 import { COURSE_COLORS, type Course, type CourseFormPayload } from "@/lib/api/types";
-import { COURSE_TONES, SESSION_TYPE_LABELS, WEEK_DAYS } from "@/lib/schedule-meta";
+import { COURSE_TONES, SESSION_TYPE_LABELS, WEEK_DAYS } from "@/lib/meta/schedule-meta";
 import { courseFormSchema, emptySession, type CourseFormValues } from "@/lib/validations/schedule";
 import { cn } from "@/lib/utils";
 

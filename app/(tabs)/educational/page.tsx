@@ -1,5 +1,5 @@
-import { SectionLandingPage } from "@/components/section-page";
-import { sectionPages } from "@/lib/university-data";
+import { SectionLandingPage } from "@/components/layout/section-page";
+import { sectionPages } from "@/lib/data/university-data";
 
 export default function EducationalPage() {
   return <SectionLandingPage {...sectionPages.educational} />;

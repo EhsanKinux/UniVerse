@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfile, useLogout } from "@/hooks/auth";
-import { APP_VERSION } from "@/lib/profile-data";
+import { APP_VERSION } from "@/lib/data/profile-data";
 import { ProfileIdentityCard } from "./profile-identity-card";
 import { ProfileCompletionCard } from "./profile-completion-card";
 import { ProfileInfoSections } from "./profile-info-sections";

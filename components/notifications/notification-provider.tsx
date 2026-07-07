@@ -19,7 +19,7 @@ import {
   saveNotifications,
 } from "@/lib/notifications/store";
 import type { AppNotification } from "@/lib/notifications/types";
-import { getNotificationsEnabled } from "@/lib/preferences";
+import { getNotificationsEnabled } from "@/lib/storage/preferences";
 
 import { Toaster, type ToastData } from "./toaster";
 

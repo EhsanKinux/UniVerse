@@ -1,8 +1,8 @@
 "use client";
 
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "./theme-provider";
 import { NotificationProvider } from "@/components/notifications/notification-provider";
-import { QueryProvider } from "@/components/providers/query-provider";
+import { QueryProvider } from "./query-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

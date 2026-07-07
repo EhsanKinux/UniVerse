@@ -1,4 +1,4 @@
-import { MobileShell } from "@/components/mobile-shell";
+import { MobileShell } from "@/components/layout/mobile-shell";
 
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   return (

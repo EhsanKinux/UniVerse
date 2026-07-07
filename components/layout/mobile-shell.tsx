@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { bottomTabs } from "@/lib/university-data";
+import { bottomTabs } from "@/lib/data/university-data";
 import { cn } from "@/lib/utils";
-import { NotificationBell } from "./notifications/notification-bell";
-import { ProfileMenu } from "./profile-menu";
+import { NotificationBell } from "../notifications/notification-bell";
+import { ProfileMenu } from "../profile/profile-menu";
 import Image from "next/image";
 
 export function MobileShell({

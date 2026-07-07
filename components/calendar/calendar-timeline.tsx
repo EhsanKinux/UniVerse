@@ -1,5 +1,5 @@
 import { SectionHeading } from "@/components/module/module-ui";
-import { statusStyles } from "@/lib/calendar-meta";
+import { statusStyles } from "@/lib/meta/calendar-meta";
 import type { CalendarEvent } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 import { CalendarEventCard } from "./calendar-event-card";

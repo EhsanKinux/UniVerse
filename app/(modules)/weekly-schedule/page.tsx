@@ -23,7 +23,7 @@ import { WeekGrid } from "@/components/schedule/week-grid";
 import { Button } from "@/components/ui/button";
 import { useWeeklySchedule } from "@/hooks/schedule/use-weekly-schedule";
 import type { Course, SessionParity } from "@/lib/api/types";
-import { faDigits, flattenSessions, weeklyHoursLabel } from "@/lib/schedule-meta";
+import { faDigits, flattenSessions, weeklyHoursLabel } from "@/lib/meta/schedule-meta";
 import { cn } from "@/lib/utils";
 
 const HERO_TONE =

@@ -12,7 +12,7 @@ import { ModuleHero } from "@/components/module/module-hero";
 import { SectionHeading } from "@/components/module/module-ui";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { addDropWindow, requests, rules, steps, type RequestStatus } from "@/lib/add-drop-data";
+import { addDropWindow, requests, rules, steps, type RequestStatus } from "@/lib/data/add-drop-data";
 import { cn } from "@/lib/utils";
 
 const HERO_TONE =

@@ -7,7 +7,7 @@ import { PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import { Card } from "@/components/ui/card";
 import { toPersianDigits } from "@/lib/utils";
 import type { ProfileData } from "@/lib/api/types";
-import { profileSections } from "@/lib/profile-fields";
+import { profileSections } from "@/lib/meta/profile-fields";
 
 /**
  * The read-only view of every profile field, grouped into the same sections the

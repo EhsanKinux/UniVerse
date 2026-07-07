@@ -14,7 +14,7 @@ import { cn, toEnglishDigits } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { ProfileData, UpdateProfilePayload } from "@/lib/api/types";
-import { type FormInput, profileSections } from "@/lib/profile-fields";
+import { type FormInput, profileSections } from "@/lib/meta/profile-fields";
 import { useProfileMutations } from "@/hooks/profile";
 
 // Numeric fields the backend validates as ASCII digits — normalise before send.

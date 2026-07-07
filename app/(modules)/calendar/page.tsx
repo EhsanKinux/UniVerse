@@ -9,7 +9,7 @@ import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, ErrorState, FilterChips, InfoNote } from "@/components/module/module-ui";
 import { useActiveCalendar } from "@/hooks/calendar";
 import type { EventCategory } from "@/lib/api/types";
-import { eventCategories } from "@/lib/calendar-meta";
+import { eventCategories } from "@/lib/meta/calendar-meta";
 import { toPersianDigits } from "@/lib/utils";
 
 const HERO_TONE =

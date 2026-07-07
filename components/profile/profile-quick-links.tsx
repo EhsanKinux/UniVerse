@@ -2,7 +2,7 @@ import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 
-import { quickLinks } from "@/lib/profile-data";
+import { quickLinks } from "@/lib/data/profile-data";
 import { SectionHeading } from "./profile-ui";
 
 /** Shortcuts from the profile to the student's own pages. */

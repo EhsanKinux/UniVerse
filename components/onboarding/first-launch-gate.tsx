@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { OnboardingFlow } from "@/components/onboarding/onboarding-flow";
 import { useMounted } from "@/hooks/use-mounted";
-import { markOnboardingSeen, useHasSeenOnboarding } from "@/lib/onboarding";
+import { markOnboardingSeen, useHasSeenOnboarding } from "@/lib/storage/onboarding";
 
 /**
  * Shows the one-time intro before letting the app shell through. `seen` is a

@@ -24,7 +24,7 @@ import {
   toMinutes,
   WEEK_DAYS,
   type FlatSession,
-} from "@/lib/schedule-meta";
+} from "@/lib/meta/schedule-meta";
 import { cn } from "@/lib/utils";
 
 /** «۱ ساعت و ۵ دقیقه» / «۴۵ دقیقه» from a raw minute count. */
