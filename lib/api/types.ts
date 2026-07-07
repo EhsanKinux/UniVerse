@@ -243,6 +243,35 @@ export interface ChartDepartment {
 }
 
 // -----------------------------------------------------------------------------
+// Phone book / شماره‌های دانشگاه (GET /phone-book)
+// -----------------------------------------------------------------------------
+// Mirrors univers-backend/src/phone-book/dto/phone-book.dto.ts. Keep in sync with
+// the server. A contact group (واحد) carries one or more phone numbers.
+
+/** One phone number in the directory. */
+export interface PhoneContact {
+  id: string;
+  name: string;
+  /** The number exactly as staff typed it; used verbatim in a `tel:` link. */
+  phone: string;
+  /** Optional internal extension, shown as «داخلی ۲۱۵». Null when none. */
+  ext: string | null;
+  /** Optional one-line note shown under the name. Null when none. */
+  note: string | null;
+  /** Optional email, rendered as a mailto link. Null when none. */
+  email: string | null;
+}
+
+/** One group with its numbers — the shape the PWA renders as a titled card. */
+export interface PhoneBookGroup {
+  id: string;
+  title: string;
+  /** Icon key; widen to string so an unknown server value never breaks the type. */
+  icon: string;
+  contacts: PhoneContact[];
+}
+
+// -----------------------------------------------------------------------------
 // News / announcements (GET /news, SSE GET /news/stream)
 // -----------------------------------------------------------------------------
 // Mirrors univers-backend/src/news/dto/news.dto.ts. Keep in sync with the server.
