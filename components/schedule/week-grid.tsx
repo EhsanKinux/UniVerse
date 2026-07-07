@@ -193,7 +193,7 @@ export function WeekGrid({
                     onClick={() => onSelectCourse(session.course.id)}
                     aria-label={`${session.course.name}، ${day.label} ${session.start} تا ${session.end}`}
                     className={cn(
-                      "absolute overflow-hidden rounded-lg border p-1 text-start transition-transform active:scale-[0.97]",
+                      "absolute flex flex-col items-center gap-0.5 overflow-hidden rounded-lg border px-0.5 py-1 text-center transition-transform active:scale-[0.97]",
                       tone.block,
                     )}
                     style={{
@@ -203,14 +203,17 @@ export function WeekGrid({
                       width: `calc(${width}% - 2px)`,
                     }}
                   >
-                    <span className="block text-[8px] font-medium tabular-nums opacity-80">
+                    <span className="shrink-0 text-[8px] font-medium tabular-nums opacity-80">
                       {faDigits(session.start)}
                     </span>
-                    <span className="block text-[10px] font-bold leading-[1.35] [overflow-wrap:anywhere]">
+                    {/* Vertical text: narrow columns can't fit horizontal Persian
+                        names without wrapping to 1–2 chars/line, so run the name
+                        down the block's (duration-sized) height instead. */}
+                    <span className="min-h-0 flex-1 text-[10px] font-bold leading-tight [overflow-wrap:anywhere] [text-orientation:mixed] [writing-mode:vertical-rl]">
                       {session.course.name}
                     </span>
                     {session.parity !== "all" && (
-                      <span className="absolute bottom-0.5 start-1 text-[8px] font-black opacity-70">
+                      <span className="shrink-0 text-[8px] font-black opacity-70">
                         {PARITY_SHORT[session.parity]}
                       </span>
                     )}
