@@ -8,7 +8,7 @@ import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, ErrorState, SearchBox } from "@/components/module/module-ui";
 import { Card } from "@/components/ui/card";
 import { usePhoneBook } from "@/hooks/phone-book/use-phone-book";
-import { contactGroupIcon } from "@/lib/phone-meta";
+import { contactGroupIcon } from "@/lib/meta/phone-meta";
 import { cn, toPersianDigits } from "@/lib/utils";
 
 const HERO_TONE =
