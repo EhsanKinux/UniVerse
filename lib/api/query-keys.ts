@@ -21,6 +21,11 @@ export const chartKeys = {
   list: () => [...chartKeys.all, "list"] as const,
 };
 
+export const phoneBookKeys = {
+  all: ["phone-book"] as const,
+  list: () => [...phoneBookKeys.all, "list"] as const,
+};
+
 export const newsKeys = {
   all: ["news"] as const,
   list: () => [...newsKeys.all, "list"] as const,
