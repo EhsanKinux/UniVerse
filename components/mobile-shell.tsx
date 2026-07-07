@@ -12,11 +12,9 @@ import Image from "next/image";
 
 export function MobileShell({
   children,
-  title = "Universe",
   subtitle = "سامانه یکپارچه مدیریت دانشگاه",
 }: {
   children: React.ReactNode;
-  title?: string;
   subtitle?: string;
 }) {
   const pathname = usePathname();
@@ -36,20 +34,20 @@ export function MobileShell({
         "
       >
         <div className="flex items-center justify-between gap-3">
-          {/* Branding */}
+          {/* Branding — the logo is a full "UniVerse" wordmark, so it stands in
+              for the title on its own; only the contextual subtitle sits beside it. */}
           <div className="flex min-w-0 items-center gap-2.5">
             <Image
               src="/icons/univers_logo.png"
-              alt="Universe"
-              width={80}
-              height={80}
-              className="shrink-0 object-contain"
+              alt="UniVerse"
+              width={156}
+              height={88}
+              className="h-9 w-auto shrink-0 object-contain"
               priority
             />
-            <div className="min-w-0 leading-tight">
-              <p className="truncate text-sm font-bold tracking-tight text-foreground">{title}</p>
-              <p className="truncate text-[11px] text-muted-foreground">{subtitle}</p>
-            </div>
+            {subtitle && (
+              <p className="min-w-0 truncate text-[11px] leading-tight text-muted-foreground">{subtitle}</p>
+            )}
           </div>
 
           {/* Notifications + profile */}
