@@ -272,6 +272,49 @@ export interface PhoneBookGroup {
 }
 
 // -----------------------------------------------------------------------------
+// Groups & channels / گروه‌ها (GET /groups)
+// -----------------------------------------------------------------------------
+// Mirrors univers-backend/src/groups/dto/groups.dto.ts. Keep in sync with the
+// server. A three-level tree: category → group card → join option.
+
+/** How to join a group. One payload field is meaningful per kind (see below). */
+export type GroupLinkKind = "link" | "handle" | "qr";
+
+/**
+ * One way to join a group:
+ *   • kind="link"   → `url` is set (open it).
+ *   • kind="handle" → `handle` is set (tap to copy an @id / invite code).
+ *   • kind="qr"     → `hasQr` is true; show the image from `groupsApi.qrUrl(id)`.
+ */
+export interface GroupLink {
+  id: string;
+  /** Widen to string so an unknown server kind never breaks the type. */
+  kind: GroupLinkKind | string;
+  /** Optional button label; null → the PWA uses a default per kind. */
+  label: string | null;
+  url: string | null;
+  handle: string | null;
+  hasQr: boolean;
+}
+
+/** One joinable group/channel — the shape the PWA renders as a card. */
+export interface Group {
+  id: string;
+  title: string;
+  description: string | null;
+  /** Free-text platform badge staff typed (e.g. «تلگرام»); null → no badge. */
+  platform: string | null;
+  links: GroupLink[];
+}
+
+/** One category with its group cards — a titled section on the PWA. */
+export interface GroupCategory {
+  id: string;
+  title: string;
+  groups: Group[];
+}
+
+// -----------------------------------------------------------------------------
 // News / announcements (GET /news, SSE GET /news/stream)
 // -----------------------------------------------------------------------------
 // Mirrors univers-backend/src/news/dto/news.dto.ts. Keep in sync with the server.
