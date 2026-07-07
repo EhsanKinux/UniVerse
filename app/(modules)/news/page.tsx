@@ -3,10 +3,11 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Attachment01Icon, Image01Icon, Megaphone01Icon } from "@hugeicons/core-free-icons";
+import { Attachment01Icon, Megaphone01Icon } from "@hugeicons/core-free-icons";
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, ErrorState, FilterChips } from "@/components/module/module-ui";
+import { NewsCoverBanner } from "@/components/news/news-cover-banner";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { useNews } from "@/hooks/news/use-news";
@@ -93,7 +94,9 @@ export default function NewsListPage() {
 function NewsRow({ item }: { item: NewsItem }) {
   return (
     <Link href={`/news/${item.id}`} className="block transition-transform active:scale-[0.99]">
-      <Card className="p-4">
+      <Card className="overflow-hidden p-4">
+        {item.hasCover && <NewsCoverBanner id={item.id} alt={item.title} />}
+
         <div className="flex items-center justify-between gap-3">
           <Badge variant="soft">{item.categoryLabel}</Badge>
           <time className="shrink-0 text-xs text-muted-foreground">{item.dateLabel}</time>
@@ -102,19 +105,12 @@ function NewsRow({ item }: { item: NewsItem }) {
         <h3 className="mt-3 line-clamp-1 text-base font-bold text-foreground">{item.title}</h3>
         <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground">{item.body}</p>
 
-        {(item.hasCover || item.attachmentCount > 0) && (
+        {item.attachmentCount > 0 && (
           <div className="mt-3 flex items-center gap-4 border-t border-border pt-3 text-xs text-muted-foreground">
-            {item.hasCover && (
-              <span className="inline-flex items-center gap-1">
-                <HugeiconsIcon icon={Image01Icon} size={14} /> تصویر
-              </span>
-            )}
-            {item.attachmentCount > 0 && (
-              <span className="inline-flex items-center gap-1">
-                <HugeiconsIcon icon={Attachment01Icon} size={14} />
-                {toPersianDigits(item.attachmentCount)} پیوست
-              </span>
-            )}
+            <span className="inline-flex items-center gap-1">
+              <HugeiconsIcon icon={Attachment01Icon} size={14} />
+              {toPersianDigits(item.attachmentCount)} پیوست
+            </span>
           </div>
         )}
       </Card>
