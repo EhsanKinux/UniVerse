@@ -3,16 +3,13 @@ import Link from "next/link";
 import { moduleGroups } from "@/lib/university-data";
 import { SectionPage } from "@/components/section-page";
 import { AnnouncementsCarousel } from "@/components/home/announcements-carousel";
+import { TodayClassesCard } from "@/components/home/today-classes-card";
 
 const quickAccessModules = [
-  moduleGroups.educational[0],
-  moduleGroups.educational[1],
-  moduleGroups.educational[2],
-  moduleGroups.services[0],
-  moduleGroups.services[1],
-  moduleGroups.student[0],
-  moduleGroups.student[1],
-  moduleGroups.student[2],
+  moduleGroups.educational[1], // تقویم آموزشی
+  moduleGroups.student[0], // غذای هفته
+  moduleGroups.student[1], // برنامه هفتگی
+  moduleGroups.student[2], // گروه‌ها
 ] as const;
 
 export default function HomeTab() {
@@ -34,6 +31,8 @@ export default function HomeTab() {
           </p>
         </div>
       </section>
+
+      <TodayClassesCard />
 
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-3 px-1">
