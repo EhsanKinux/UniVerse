@@ -133,6 +133,15 @@ export function faDigits(value: string | number): string {
   return String(value).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
 }
 
+/** «۱ ساعت و ۵ دقیقه» / «۴۵ دقیقه» from a raw minute count. */
+export function untilLabel(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h > 0 && m > 0) return `${faDigits(h)} ساعت و ${faDigits(m)} دقیقه`;
+  if (h > 0) return `${faDigits(h)} ساعت`;
+  return `${faDigits(m)} دقیقه`;
+}
+
 /** Total weekly hours of a session list, as a Persian label like «۱۴٫۵». */
 export function weeklyHoursLabel(sessions: { start: string; end: string }[]): string {
   const minutes = sessions.reduce((sum, s) => sum + (toMinutes(s.end) - toMinutes(s.start)), 0);
