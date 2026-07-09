@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { FirstLaunchGate } from "@/components/onboarding/first-launch-gate";
 import { Providers } from "@/components/providers";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
+import { InsecureContextHint } from "@/components/pwa/insecure-context-hint";
 import { appleStartupImages } from "./apple-splash-screens";
 
 const APP_NAME = "Universe";
@@ -95,6 +96,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Providers>
           <FirstLaunchGate>{children}</FirstLaunchGate>
           <InstallPrompt />
+          <InsecureContextHint />
         </Providers>
       </body>
     </html>

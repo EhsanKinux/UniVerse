@@ -66,9 +66,12 @@ export function InstallPrompt() {
   // on that; see the useMounted hook).
   const env = React.useMemo(() => {
     if (!mounted) {
-      return { standalone: false, iosSafari: false, alreadyDismissed: false };
+      return { secure: true, standalone: false, iosSafari: false, alreadyDismissed: false };
     }
     return {
+      // Install/SW only work in a secure context; over plain http:// we suppress
+      // the whole prompt (InsecureContextHint explains the situation instead).
+      secure: window.isSecureContext,
       standalone: isStandalone(),
       iosSafari: isIOSSafari(),
       alreadyDismissed: localStorage.getItem(DISMISS_KEY) === "1",
@@ -77,7 +80,7 @@ export function InstallPrompt() {
 
   // Capture Chromium's deferred install prompt (never fires on iOS).
   React.useEffect(() => {
-    if (env.standalone || env.alreadyDismissed || env.iosSafari) return;
+    if (!env.secure || env.standalone || env.alreadyDismissed || env.iosSafari) return;
 
     const onPrompt = (e: Event) => {
       e.preventDefault(); // suppress the mini-infobar; we render our own banner
@@ -95,7 +98,7 @@ export function InstallPrompt() {
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
     };
-  }, [env.standalone, env.alreadyDismissed, env.iosSafari]);
+  }, [env.secure, env.standalone, env.alreadyDismissed, env.iosSafari]);
 
   async function handleInstall() {
     if (!deferred) return;
@@ -113,7 +116,7 @@ export function InstallPrompt() {
     setDismissed(true);
   }
 
-  const hidden = !mounted || dismissed || env.alreadyDismissed || env.standalone;
+  const hidden = !mounted || dismissed || env.alreadyDismissed || env.standalone || !env.secure;
   const mode: "ios" | "android" | null = hidden
     ? null
     : env.iosSafari
