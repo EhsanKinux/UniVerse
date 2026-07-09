@@ -40,9 +40,9 @@ export function AnnouncementsCarousel() {
           <CarouselItem key={item.id} className="basis-[86%] ps-3 md:basis-1/2 xl:basis-[38%]">
             <Link
               href={`/news/${item.id}`}
-              className="block h-full transition-transform active:scale-[0.99]"
+              className="group block h-full transition-transform active:scale-[0.99]"
             >
-              <Card className="flex h-full flex-col overflow-hidden p-4">
+              <Card className="flex h-full flex-col overflow-hidden p-4 transition-all duration-200 group-hover:border-primary/25 group-hover:shadow-md">
                 {item.hasCover && <NewsCoverBanner id={item.id} alt={item.title} />}
 
                 <div className="flex items-center justify-between gap-3">
@@ -50,7 +50,9 @@ export function AnnouncementsCarousel() {
                   <time className="shrink-0 text-xs text-muted-foreground">{item.dateLabel}</time>
                 </div>
 
-                <h3 className="mt-4 line-clamp-1 text-base font-bold text-foreground">{item.title}</h3>
+                <h3 className="mt-4 line-clamp-1 text-base font-bold text-foreground transition-colors group-hover:text-primary">
+                  {item.title}
+                </h3>
                 <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{item.body}</p>
 
                 {item.attachmentCount > 0 && (
