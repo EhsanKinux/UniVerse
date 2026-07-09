@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, Megaphone01Icon } from "@hugeicons/core-free-icons";
 
 import { moduleGroups } from "@/lib/data/university-data";
 import { SectionPage } from "@/components/layout/section-page";
 import { AnnouncementsCarousel } from "@/components/home/announcements-carousel";
+import { HomeHero } from "@/components/home/home-hero";
 import { TodayClassesCard } from "@/components/home/today-classes-card";
 
 const quickAccessModules = [
@@ -16,54 +19,47 @@ export default function HomeTab() {
   return (
     <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,21rem)] lg:items-start lg:gap-7 xl:grid-cols-[minmax(0,1fr)_minmax(0,23rem)]">
       <div className="space-y-7">
-        <section className="relative isolate overflow-hidden rounded-3xl border border-border bg-muted shadow-sm">
-          <div className="aspect-video w-full bg-[url('/imgs/HUT.webp')] bg-cover bg-center sm:aspect-21/9" />
-          <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/25 to-black/5" />
+        <HomeHero />
 
-          <div className="absolute inset-x-0 bottom-0 p-5 text-white md:p-7">
-            <div className="mb-3 inline-flex rounded-full border border-white/20 bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-md">
-              خوش آمدید
-            </div>
-
-            <h2 className="max-w-xs text-2xl font-bold leading-9 tracking-tight md:max-w-md md:text-3xl md:leading-11">
-              همه چیز دانشگاه در یک اپ
-            </h2>
-
-            <p className="mt-2 max-w-sm text-sm leading-6 text-white/80 md:max-w-lg">
-              امور آموزشی، خدمات، غذا، برنامه هفتگی و اطلاعات دانشجویی را سریع و یکجا مدیریت کنید.
-            </p>
-          </div>
-        </section>
-
-        <div className="lg:hidden">
+        <div className="lg:hidden motion-safe:animate-fade-in-up motion-safe:[animation-delay:100ms]">
           <TodayClassesCard />
         </div>
 
-        <section className="space-y-4">
+        <section className="space-y-4 motion-safe:animate-fade-in-up motion-safe:[animation-delay:160ms]">
           <div className="flex items-end justify-between gap-3 px-1">
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-foreground">اخبار و اطلاعیه‌ها</h2>
-              <p className="mt-1 text-sm text-muted-foreground">آخرین پیام‌های مهم دانشگاه</p>
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-primary/10 text-primary">
+                <HugeiconsIcon icon={Megaphone01Icon} size={19} />
+              </span>
+              <div className="min-w-0">
+                <h2 className="truncate text-lg font-bold tracking-tight text-foreground md:text-xl">
+                  اخبار و اطلاعیه‌ها
+                </h2>
+                <p className="mt-0.5 truncate text-xs text-muted-foreground md:text-sm">
+                  آخرین پیام‌های مهم دانشگاه
+                </p>
+              </div>
             </div>
 
             <Link
               href="/news"
-              className="shrink-0 text-xs font-medium text-primary transition-colors hover:text-primary/80"
+              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-primary shadow-xs transition-colors hover:border-primary/25 hover:bg-primary/5"
             >
               مشاهده همه
+              <HugeiconsIcon icon={ArrowLeft01Icon} size={14} />
             </Link>
           </div>
 
           <AnnouncementsCarousel />
         </section>
 
-        <div className="lg:hidden">
+        <div className="lg:hidden motion-safe:animate-fade-in-up motion-safe:[animation-delay:220ms]">
           <SectionPage title="دسترسی سریع" modules={quickAccessModules} variant="apps" />
         </div>
       </div>
 
       {/* Desktop side rail */}
-      <aside className="hidden space-y-7 lg:block">
+      <aside className="hidden space-y-7 lg:block motion-safe:animate-fade-in-up motion-safe:[animation-delay:140ms]">
         <TodayClassesCard />
         <SectionPage
           title="دسترسی سریع"
