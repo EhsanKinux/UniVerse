@@ -37,7 +37,7 @@ export function AnnouncementsCarousel() {
     <Carousel opts={{ align: "start", direction: "rtl" }} className="w-full">
       <CarouselContent className="-ms-3">
         {items.map((item) => (
-          <CarouselItem key={item.id} className="basis-[86%] ps-3">
+          <CarouselItem key={item.id} className="basis-[86%] ps-3 md:basis-1/2 xl:basis-[38%]">
             <Link
               href={`/news/${item.id}`}
               className="block h-full transition-transform active:scale-[0.99]"
@@ -74,7 +74,7 @@ function AnnouncementsSkeleton() {
   return (
     <div className="-ms-3 flex" aria-hidden>
       {[0, 1].map((i) => (
-        <div key={i} className="basis-[86%] ps-3">
+        <div key={i} className="basis-[86%] ps-3 md:basis-1/2 xl:basis-[38%]">
           <div className="h-32 animate-pulse rounded-2xl border border-border bg-card/50" />
         </div>
       ))}

@@ -119,9 +119,9 @@ export default function WeeklySchedulePage() {
       {hero}
 
       {/* Toolbar: view switch + add course */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 md:justify-between">
         <div
-          className="flex flex-1 rounded-2xl border border-border bg-card/70 p-1"
+          className="flex flex-1 rounded-2xl border border-border bg-card/70 p-1 md:max-w-xs"
           role="radiogroup"
           aria-label="نمای برنامه"
         >

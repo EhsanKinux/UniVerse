@@ -208,8 +208,9 @@ export function WeekGrid({
                     </span>
                     {/* Vertical text: narrow columns can't fit horizontal Persian
                         names without wrapping to 1–2 chars/line, so run the name
-                        down the block's (duration-sized) height instead. */}
-                    <span className="min-h-0 flex-1 text-[10px] font-bold leading-tight [overflow-wrap:anywhere] [text-orientation:mixed] [writing-mode:vertical-rl]">
+                        down the block's (duration-sized) height instead. Desktop
+                        columns are wide enough to read normally again. */}
+                    <span className="min-h-0 flex-1 text-[10px] font-bold leading-tight [overflow-wrap:anywhere] [text-orientation:mixed] [writing-mode:vertical-rl] lg:text-[11px] lg:[writing-mode:horizontal-tb]">
                       {session.course.name}
                     </span>
                     {session.parity !== "all" && (

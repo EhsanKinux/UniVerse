@@ -1,9 +1,9 @@
-import { MobileShell } from "@/components/layout/mobile-shell";
+import { AppShell } from "@/components/layout/app-shell";
 
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   return (
-    <MobileShell subtitle="حساب کاربری">
+    <AppShell subtitle="حساب کاربری">
       {children}
-    </MobileShell>
+    </AppShell>
   );
 }

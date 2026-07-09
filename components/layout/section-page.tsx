@@ -18,6 +18,9 @@ type SectionPageProps = {
   description?: string;
   modules: readonly SectionModule[];
   variant?: "cards" | "apps";
+  /** Overrides the responsive grid classes — the defaults track viewport width,
+      which is wrong inside narrow containers like the home page's desktop rail. */
+  gridClassName?: string;
 };
 
 export function SectionPage({
@@ -25,6 +28,7 @@ export function SectionPage({
   description,
   modules,
   variant = "cards",
+  gridClassName,
 }: SectionPageProps) {
   return (
     <div className="space-y-5">
@@ -34,7 +38,14 @@ export function SectionPage({
         {description && <p className="text-sm leading-6 text-muted-foreground">{description}</p>}
       </div>
 
-      <div className={cn(variant === "apps" ? "grid grid-cols-4 gap-x-3 gap-y-5" : "grid grid-cols-2 gap-3")}>
+      <div
+        className={cn(
+          gridClassName ??
+            (variant === "apps"
+              ? "grid grid-cols-4 gap-x-3 gap-y-5 sm:grid-cols-5 md:grid-cols-6 xl:grid-cols-8"
+              : "grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4"),
+        )}
+      >
         {modules.map((item) => (
           <Link
             key={item.href}
@@ -102,18 +113,22 @@ export function SectionLandingPage({
 }) {
   return (
     <div className="space-y-7">
-      <Card className="relative overflow-hidden p-5">
+      <Card className="relative overflow-hidden p-5 md:p-8">
         <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-transparent" />
 
         <div className="relative z-10 space-y-4">
           <Badge variant="soft">{eyebrow}</Badge>
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold leading-9 tracking-tight text-foreground">{title}</h1>
-            <p className="max-w-xl text-sm leading-6 text-muted-foreground">{description}</p>
+            <h1 className="text-2xl font-bold leading-9 tracking-tight text-foreground md:text-3xl md:leading-11">
+              {title}
+            </h1>
+            <p className="max-w-xl text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
+              {description}
+            </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2 md:max-w-lg">
             {stats.map((stat) => (
               <div key={stat} className="rounded-2xl border border-border bg-background/70 px-3 py-2 text-center shadow-xs">
                 <span className="block truncate text-xs font-medium text-foreground">{stat}</span>

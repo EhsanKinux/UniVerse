@@ -196,7 +196,9 @@ export default function GroupsPage() {
           {categories.map((category) => (
             <div key={category.id} className="space-y-3">
               <SectionHeading title={category.title} />
-              <div className="grid gap-3">{category.groups.map((group) => renderCard(group))}</div>
+              <div className="grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {category.groups.map((group) => renderCard(group))}
+              </div>
             </div>
           ))}
         </section>
@@ -211,7 +213,7 @@ function GroupsSkeleton() {
       {[0, 1].map((s) => (
         <div key={s} className="space-y-3">
           <div className="h-6 w-40 animate-pulse rounded-lg bg-card/60" />
-          <div className="grid gap-3">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {[0, 1].map((c) => (
               <div key={c} className="h-[128px] animate-pulse rounded-2xl border border-border bg-card/50" />
             ))}

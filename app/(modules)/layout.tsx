@@ -1,9 +1,9 @@
-import { MobileShell } from "@/components/layout/mobile-shell";
+import { AppShell } from "@/components/layout/app-shell";
 
 export default function ModulesLayout({ children }: { children: React.ReactNode }) {
   return (
-    <MobileShell subtitle="جزئیات سرویس دانشگاهی">
+    <AppShell subtitle="جزئیات سرویس دانشگاهی">
       {children}
-    </MobileShell>
+    </AppShell>
   );
 }

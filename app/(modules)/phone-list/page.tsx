@@ -94,9 +94,11 @@ export default function PhoneListPage() {
         />
       ) : (
         <>
-          <SearchBox value={query} onChange={setQuery} placeholder="جستجوی واحد یا شماره..." />
+          <div className="md:max-w-md">
+            <SearchBox value={query} onChange={setQuery} placeholder="جستجوی واحد یا شماره..." />
+          </div>
 
-          <section id="content" className="space-y-5">
+          <section id="content" className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
             {filteredGroups.length === 0 ? (
               <EmptyState title="شماره‌ای یافت نشد" subtitle="عبارت دیگری را جستجو کنید" />
             ) : (
@@ -182,7 +184,7 @@ export default function PhoneListPage() {
 
 function PhoneListSkeleton() {
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
       {[0, 1, 2].map((g) => (
         <div key={g} className="space-y-2.5">
           <div className="h-6 w-40 animate-pulse rounded-lg bg-card/60" />

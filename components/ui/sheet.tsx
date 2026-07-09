@@ -41,6 +41,10 @@ export function Sheet({
             "max-h-[88dvh] overflow-y-auto overscroll-contain rounded-t-3xl border border-b-0 border-border bg-background shadow-2xl outline-none",
             "pb-[max(env(safe-area-inset-bottom),1rem)]",
             "transition-transform duration-300 ease-out data-[starting-style]:translate-y-full data-[ending-style]:translate-y-full",
+            // Larger screens: float as a centered card instead of a full-bleed
+            // phone sheet (slide distance grows to cover the bottom gap).
+            "sm:bottom-6 sm:max-w-lg sm:rounded-3xl sm:border-b",
+            "sm:data-[starting-style]:translate-y-[calc(100%+1.5rem)] sm:data-[ending-style]:translate-y-[calc(100%+1.5rem)]",
             className,
           )}
         >

@@ -88,7 +88,7 @@ export function FilterChips<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0 [&::-webkit-scrollbar]:hidden">
       {options.map((opt) => {
         const active = opt.value === value;
         return (

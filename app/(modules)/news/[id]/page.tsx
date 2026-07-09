@@ -25,7 +25,7 @@ export default function NewsDetailPage() {
   const { data, isLoading, isError, refetch } = useNewsItem(id);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:mx-auto lg:w-full lg:max-w-3xl">
       <Link
         href="/news"
         className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-2 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur-xl transition-colors hover:text-foreground"
@@ -70,7 +70,7 @@ export default function NewsDetailPage() {
                 title="پیوست‌ها"
                 subtitle={`${toPersianDigits(data.attachments.length)} فایل`}
               />
-              <div className="grid gap-2.5">
+              <div className="grid gap-2.5 md:grid-cols-2">
                 {data.attachments.map((attachment) => (
                   <NewsAttachmentCard key={attachment.id} attachment={attachment} />
                 ))}

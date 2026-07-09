@@ -39,7 +39,7 @@ export function ProfileView() {
   // Loading (or pre-hydration): show placeholders so nothing pops in/out.
   if (!mounted || (isLoading && !profile)) {
     return (
-      <div className="animate-fade-in-up space-y-6 pb-4">
+      <div className="animate-fade-in-up mx-auto w-full space-y-6 pb-4 lg:max-w-2xl">
         {backLink}
         <Skeleton className="h-44 w-full rounded-3xl" />
         <Skeleton className="h-32 w-full rounded-3xl" />
@@ -51,7 +51,7 @@ export function ProfileView() {
   // No profile despite a session — a transient fetch error. Offer a retry.
   if (!profile) {
     return (
-      <div className="animate-fade-in-up space-y-6 pb-4">
+      <div className="animate-fade-in-up mx-auto w-full space-y-6 pb-4 lg:max-w-2xl">
         {backLink}
         <Card className="space-y-3 p-6 text-center">
           <p className="text-sm text-muted-foreground">دریافت اطلاعات حساب ناموفق بود.</p>
@@ -64,7 +64,7 @@ export function ProfileView() {
   }
 
   return (
-    <div className="animate-fade-in-up space-y-6 pb-4">
+    <div className="animate-fade-in-up mx-auto w-full space-y-6 pb-4 lg:max-w-2xl">
       {backLink}
 
       {editing ? (

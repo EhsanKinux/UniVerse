@@ -19,7 +19,9 @@ export function CalendarTimeline({ events }: { events: CalendarEvent[] }) {
   const groups = groupByMonth(events);
 
   return (
-    <div className="space-y-5">
+    // Each month is a self-contained timeline, so on xl they can flow
+    // side by side without breaking the rail visual.
+    <div className="space-y-5 xl:grid xl:grid-cols-2 xl:items-start xl:gap-6 xl:space-y-0">
       {groups.map(([month, monthEvents]) => (
         <section key={month} className="space-y-3">
           <SectionHeading title={month} />

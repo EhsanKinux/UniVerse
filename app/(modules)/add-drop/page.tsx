@@ -70,6 +70,8 @@ export default function AddDropPage() {
         </div>
       </section>
 
+      {/* Steps + requests sit side by side on desktop */}
+      <div className="space-y-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0">
       {/* Steps */}
       <section id="content" className="space-y-3">
         <SectionHeading title="مراحل انجام" subtitle="گام‌های لازم برای ثبت حذف و اضافه" />
@@ -154,6 +156,7 @@ export default function AddDropPage() {
           })}
         </div>
       </section>
+      </div>
 
       {/* Rules */}
       <section className="rounded-3xl border border-dashed border-border bg-muted/40 p-5">

@@ -107,7 +107,7 @@ export function DayTimeline({
           subtitle="با دکمه «افزودن درس» جلسه جدیدی ثبت کنید"
         />
       ) : (
-        <div className="space-y-3">
+        <div className="grid gap-3 lg:grid-cols-2">
           {daySessions.map((session) => (
             <SessionCard
               key={session.id}

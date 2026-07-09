@@ -79,7 +79,7 @@ export default function NewsListPage() {
               subtitle="دستهٔ دیگری را انتخاب کنید."
             />
           ) : (
-            <section id="content" className="space-y-3">
+            <section id="content" className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
               {filtered.map((item) => (
                 <NewsRow key={item.id} item={item} />
               ))}
@@ -93,8 +93,8 @@ export default function NewsListPage() {
 
 function NewsRow({ item }: { item: NewsItem }) {
   return (
-    <Link href={`/news/${item.id}`} className="block transition-transform active:scale-[0.99]">
-      <Card className="overflow-hidden p-4">
+    <Link href={`/news/${item.id}`} className="block h-full transition-transform active:scale-[0.99]">
+      <Card className="h-full overflow-hidden p-4">
         {item.hasCover && <NewsCoverBanner id={item.id} alt={item.title} />}
 
         <div className="flex items-center justify-between gap-3">
@@ -120,7 +120,7 @@ function NewsRow({ item }: { item: NewsItem }) {
 
 function NewsListSkeleton() {
   return (
-    <div className="space-y-3">
+    <div className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
       {[0, 1, 2].map((i) => (
         <div key={i} className="h-28 animate-pulse rounded-2xl border border-border bg-card/50" />
       ))}

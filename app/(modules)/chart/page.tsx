@@ -69,11 +69,13 @@ export default function ChartPage() {
         />
       ) : (
         <>
-          <SearchBox
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder="جستجوی رشته یا چارت آموزشی..."
-          />
+          <div className="md:max-w-md">
+            <SearchBox
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="جستجوی رشته یا چارت آموزشی..."
+            />
+          </div>
 
           <section id="content" className="space-y-3">
             <SectionHeading
@@ -81,7 +83,7 @@ export default function ChartPage() {
               subtitle="روی هر رشته بزنید تا چارت‌های آموزشی آن را ببینید و دانلود کنید."
             />
 
-            <div className="grid gap-3">
+            <div className="grid items-start gap-3 md:grid-cols-2">
               {filteredDepartments.length > 0 ? (
                 filteredDepartments.map((dept, index) => (
                   <DepartmentCard key={dept.id} department={dept} index={index} />
@@ -104,7 +106,7 @@ export default function ChartPage() {
 
 function ChartSkeleton() {
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-3 md:grid-cols-2">
       {[0, 1, 2, 3].map((i) => (
         <div key={i} className="h-[88px] animate-pulse rounded-2xl border border-border bg-card/50" />
       ))}

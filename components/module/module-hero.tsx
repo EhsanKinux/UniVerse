@@ -45,7 +45,7 @@ export function ModuleHero({
         بازگشت به {backLabel}
       </Link>
 
-      <Card className="relative overflow-hidden p-5">
+      <Card className="relative overflow-hidden p-5 md:p-7">
         <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-transparent" />
         <div className="absolute -top-8 -start-8 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
         <div className="absolute -bottom-6 -end-6 h-24 w-24 rounded-full bg-primary/5 blur-2xl" />
@@ -66,12 +66,14 @@ export function ModuleHero({
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold leading-9 tracking-tight text-foreground">{title}</h1>
-            <p className="text-sm leading-7 text-muted-foreground">{description}</p>
+            <h1 className="text-2xl font-bold leading-9 tracking-tight text-foreground md:text-3xl md:leading-11">
+              {title}
+            </h1>
+            <p className="max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">{description}</p>
           </div>
 
           {stats && stats.length > 0 && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 md:max-w-2xl">
               {stats.map((stat) => (
                 <div
                   key={stat.label}

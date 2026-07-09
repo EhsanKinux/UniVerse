@@ -22,7 +22,7 @@ export default function SystemsPage() {
         stats={[{ icon: Building05Icon, value: String(systems.length), label: "سامانه فعال" }]}
       />
 
-      <section id="content" className="grid grid-cols-2 gap-3">
+      <section id="content" className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4">
         {systems.map((system) => (
           <a
             key={system.id}

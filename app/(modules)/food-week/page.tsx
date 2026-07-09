@@ -51,7 +51,7 @@ export default function FoodWeekPage() {
       />
 
       {/* Day selector */}
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0 [&::-webkit-scrollbar]:hidden">
         {foodWeek.map((day) => {
           const active = day.id === activeId;
           return (
@@ -86,20 +86,22 @@ export default function FoodWeekPage() {
           )}
         </div>
 
-        <MealCard
-          title="ناهار"
-          icon={Sun01Icon}
-          meal={activeDay.lunch}
-          reserved={isReserved(activeDay.id, "lunch", activeDay.lunch.reserved)}
-          onToggle={() => toggle(activeDay.id, "lunch", isReserved(activeDay.id, "lunch", activeDay.lunch.reserved))}
-        />
-        <MealCard
-          title="شام"
-          icon={Coffee01Icon}
-          meal={activeDay.dinner}
-          reserved={isReserved(activeDay.id, "dinner", activeDay.dinner.reserved)}
-          onToggle={() => toggle(activeDay.id, "dinner", isReserved(activeDay.id, "dinner", activeDay.dinner.reserved))}
-        />
+        <div className="grid gap-3 md:grid-cols-2 md:gap-4">
+          <MealCard
+            title="ناهار"
+            icon={Sun01Icon}
+            meal={activeDay.lunch}
+            reserved={isReserved(activeDay.id, "lunch", activeDay.lunch.reserved)}
+            onToggle={() => toggle(activeDay.id, "lunch", isReserved(activeDay.id, "lunch", activeDay.lunch.reserved))}
+          />
+          <MealCard
+            title="شام"
+            icon={Coffee01Icon}
+            meal={activeDay.dinner}
+            reserved={isReserved(activeDay.id, "dinner", activeDay.dinner.reserved)}
+            onToggle={() => toggle(activeDay.id, "dinner", isReserved(activeDay.id, "dinner", activeDay.dinner.reserved))}
+          />
+        </div>
       </section>
     </div>
   );

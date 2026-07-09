@@ -92,7 +92,7 @@ export default function CoursesPage() {
                 title="نسخه‌های پیشین"
                 subtitle={`${toPersianDigits(archive.length)} فایل بایگانی‌شده`}
               />
-              <div className="grid gap-3">
+              <div className="grid gap-3 md:grid-cols-2">
                 {archive.map((doc) => (
                   <ArchiveRow key={doc.id} doc={doc} />
                 ))}
@@ -144,7 +144,7 @@ function ActiveDocumentCard({ doc }: { doc: DocumentMeta }) {
         به‌روزرسانی: {doc.updatedAtLabel}
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
+      <div className="mt-4 grid grid-cols-2 gap-3 md:max-w-md">
         <DocAction href={documentsApi.fileUrl(doc.id)} icon={ViewIcon} label="مشاهده" primary />
         <DocAction
           href={documentsApi.fileUrl(doc.id, { download: true })}
