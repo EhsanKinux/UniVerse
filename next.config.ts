@@ -18,6 +18,19 @@ const nextConfig: NextConfig = {
   // before matching, so entries like "http://x:3000" never match.
   allowedDevOrigins: ["192.168.1.2", "192.168.1.4", "192.168.56.1"],
 
+  // Serve <Image> sources as plain static files instead of through the
+  // `/_next/image` optimizer endpoint. The WCDN edge in front of production
+  // returns 400 for every `/_next/image?url=…` request (query string appears
+  // to be dropped/mangled toward the origin), while plain static files pass
+  // through fine — so optimized images render locally but break in prod
+  // (see docs/image-optimizer-cdn.md). Every next/image usage here is a small
+  // local brand asset (logo, app icon, onboarding art); dynamic images (news
+  // covers) already use plain <img>, so the optimizer buys us nothing anyway.
+  // Direct static URLs are also what the service worker precaches, which
+  // makes these images work offline. Only revert once the CDN provably
+  // forwards `/_next/image` query strings.
+  images: { unoptimized: true },
+
   async rewrites() {
     return [
       {
