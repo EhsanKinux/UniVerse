@@ -19,6 +19,14 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
+// Where the browser sends API calls — mirrors `lib/env.ts`. Inlined at build
+// time. Either a same-origin prefix ("/api", proxied by Next) or an absolute
+// public origin (e.g. "https://unib.dowloadfiles.ir" when the browser calls the
+// backend directly). Resolving against the SW's own origin makes both forms
+// comparable as full URLs, so the matchers below work in either deployment.
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || "/api").replace(/\/+$/, "");
+const apiUrl = (path: string) => new URL(`${API_BASE}${path}`, self.location.origin).href;
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
@@ -26,11 +34,10 @@ const serwist = new Serwist({
   navigationPreload: true,
   runtimeCaching: [
     {
-      // Academic calendar (same-origin, proxied to the backend under /api).
-      // Stale-while-revalidate keeps the last-known calendar available offline
-      // while it refreshes in the background.
+      // Academic calendar. Stale-while-revalidate keeps the last-known calendar
+      // available offline while it refreshes in the background.
       matcher: ({ url, request }) =>
-        request.method === "GET" && url.pathname === "/api/calendar/active",
+        request.method === "GET" && url.href === apiUrl("/calendar/active"),
       handler: new StaleWhileRevalidate({
         cacheName: "calendar-active",
         plugins: [
@@ -40,9 +47,9 @@ const serwist = new Serwist({
       }),
     },
     {
-      // Everything else under /api is live data (and the news SSE stream) — never
+      // Everything else on the API is live data (and the news SSE stream) — never
       // cache it, so the SW can't serve a stale API response or buffer the stream.
-      matcher: ({ url }) => url.pathname.startsWith("/api/"),
+      matcher: ({ url }) => url.href.startsWith(apiUrl("/")),
       handler: new NetworkOnly(),
     },
     ...defaultCache,
@@ -100,6 +107,60 @@ self.addEventListener("push", (event) => {
     }),
   );
 });
+
+// The browser can rotate a push subscription on its own (browser/WebAPK update,
+// push-service key rollover). Pages only repair this while open; handling it
+// here keeps the backend's endpoint current even when the app is closed —
+// otherwise every send returns 410, the row is pruned, and pushes silently
+// stop until the next app open.
+interface PushSubscriptionChangeEvent extends ExtendableEvent {
+  readonly oldSubscription: PushSubscription | null;
+  readonly newSubscription: PushSubscription | null;
+}
+
+const postJson = (path: string, body: unknown) =>
+  fetch(apiUrl(path), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+self.addEventListener("pushsubscriptionchange", ((event: PushSubscriptionChangeEvent) => {
+  event.waitUntil(
+    (async () => {
+      let sub = event.newSubscription;
+      if (!sub) {
+        // No replacement provided — renew with the key the old subscription
+        // used. Without that key there's nothing to renew with; the app
+        // self-heals on its next open instead.
+        const applicationServerKey = event.oldSubscription?.options.applicationServerKey;
+        if (!applicationServerKey) return;
+        try {
+          sub = await self.registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey,
+          });
+        } catch {
+          return;
+        }
+      }
+
+      const json = sub.toJSON();
+      if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth) return;
+
+      await postJson("/push/subscribe", {
+        endpoint: json.endpoint,
+        keys: { p256dh: json.keys.p256dh, auth: json.keys.auth },
+      }).catch(() => undefined);
+
+      if (event.oldSubscription && event.oldSubscription.endpoint !== json.endpoint) {
+        await postJson("/push/unsubscribe", {
+          endpoint: event.oldSubscription.endpoint,
+        }).catch(() => undefined);
+      }
+    })(),
+  );
+}) as EventListener);
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
