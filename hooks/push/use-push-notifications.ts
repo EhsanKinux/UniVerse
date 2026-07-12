@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { pushApi } from "@/lib/api/push.api";
 import { isPushSupported, urlBase64ToUint8Array } from "@/lib/push/helpers";
+import { getNotificationsEnabled } from "@/lib/storage/preferences";
 
 export interface PushNotifications {
   /** API support AND an active service worker (false in `next dev`). */
@@ -59,8 +60,28 @@ export function usePushNotifications(): PushNotifications {
         return;
       }
       setSupported(true);
-      const sub = await reg.pushManager.getSubscription();
+      let sub = await reg.pushManager.getSubscription();
       if (cancelled) return;
+
+      // Self-heal: permission is already granted and notifications are on, but
+      // this browser has no subscription (first open after install, cleared
+      // site data, or a rotation we missed). Subscribing now shows no prompt,
+      // so it's safe to do without a user gesture.
+      if (!sub && Notification.permission === "granted" && getNotificationsEnabled()) {
+        try {
+          const publicKey = await pushApi.getPublicKey();
+          if (publicKey && !cancelled) {
+            sub = await reg.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: urlBase64ToUint8Array(publicKey),
+            });
+          }
+        } catch {
+          /* stay unsubscribed; the profile toggle can retry with feedback */
+        }
+      }
+      if (cancelled) return;
+
       setActive(Boolean(sub));
       if (sub) {
         const payload = toPayload(sub);

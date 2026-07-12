@@ -15,7 +15,9 @@ import { useNewsStream } from "@/hooks/news/use-news-stream";
 import type { NewsItem } from "@/lib/api/types";
 import {
   MAX_NOTIFICATIONS,
+  loadLastSeenAt,
   loadNotifications,
+  saveLastSeenAt,
   saveNotifications,
 } from "@/lib/notifications/store";
 import type { AppNotification } from "@/lib/notifications/types";
@@ -70,6 +72,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   // being recreated on every change (which would tear down and reopen the SSE).
   const listRef = useRef<AppNotification[]>([]);
   const hydrated = useRef(false);
+  // Publish times at or before this are "seen"; the backfill marks later ones
+  // unread so news that arrived while the app was closed still lights the badge.
+  const lastSeenRef = useRef(0);
 
   const commit = useCallback((next: AppNotification[]) => {
     const capped = next.slice(0, MAX_NOTIFICATIONS);
@@ -81,6 +86,15 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   // Hydrate persisted history once, after mount (client-only → no SSR mismatch).
   useEffect(() => {
     listRef.current = loadNotifications();
+    const seen = loadLastSeenAt();
+    if (seen === null) {
+      // First run on this device: treat everything published so far as seen,
+      // so the initial history backfill doesn't light the badge.
+      lastSeenRef.current = Date.now();
+      saveLastSeenAt(lastSeenRef.current);
+    } else {
+      lastSeenRef.current = seen;
+    }
     setNotifications(listRef.current);
     hydrated.current = true;
   }, []);
@@ -100,22 +114,41 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   useNewsStream(handleCreated);
 
-  // Backfill the bell from the current list so it isn't empty on first load —
-  // marked READ, so only genuinely-new (live) items ever show as unread.
+  // Backfill the bell from the current news list. Items published after the
+  // watermark arrived while the app was closed (the SSE event was missed), so
+  // they surface as UNREAD up top; anything older is just history, added read.
   const { data: newsList } = useNews();
   useEffect(() => {
     if (!newsList || !hydrated.current) return;
     const known = new Set(listRef.current.map((n) => n.newsId));
     const missing = newsList.filter((item) => !known.has(item.id));
     if (missing.length === 0) return;
-    commit([...listRef.current, ...missing.map((item) => toNotification(item, true))]);
+    const additions = missing.map((item) => {
+      const publishedAt = Date.parse(item.publishedAt);
+      const isNew = Number.isFinite(publishedAt) && publishedAt > lastSeenRef.current;
+      return toNotification(item, !isNew);
+    });
+    const fresh = additions.filter((n) => !n.read);
+    const history = additions.filter((n) => n.read);
+    commit([...fresh, ...listRef.current, ...history]);
   }, [newsList, commit]);
 
-  const markAllRead = useCallback(() => {
-    commit(listRef.current.map((n) => (n.read ? n : { ...n, read: true })));
-  }, [commit]);
+  const markSeenNow = useCallback(() => {
+    lastSeenRef.current = Date.now();
+    saveLastSeenAt(lastSeenRef.current);
+  }, []);
 
-  const clearAll = useCallback(() => commit([]), [commit]);
+  const markAllRead = useCallback(() => {
+    markSeenNow();
+    commit(listRef.current.map((n) => (n.read ? n : { ...n, read: true })));
+  }, [commit, markSeenNow]);
+
+  // Advancing the watermark here too keeps cleared items from being re-added
+  // as unread by the next backfill pass.
+  const clearAll = useCallback(() => {
+    markSeenNow();
+    commit([]);
+  }, [commit, markSeenNow]);
 
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));

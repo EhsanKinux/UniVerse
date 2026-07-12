@@ -41,8 +41,13 @@ export function ProfilePreferences() {
       return "اعلان سیستمی در مرورگر مسدود شده؛ از تنظیمات سایت اجازه دهید.";
     if (push.active)
       return "اعلان درون‌برنامه‌ای و سیستمی فعال است (حتی وقتی برنامه بسته است).";
-    return "اعلان‌های درون‌برنامه‌ای فعال است.";
+    return "اعلان درون‌برنامه‌ای فعال است؛ اعلان سیستمی دستگاه هنوز فعال نشده.";
   })();
+
+  // The permission prompt needs a user gesture, and the switch defaults to ON —
+  // so a device that never tapped it needs an explicit way in.
+  const showEnablePush =
+    mounted && notifications && push.supported && !push.active && push.permission !== "denied";
 
   return (
     <section className="space-y-3">
@@ -87,6 +92,16 @@ export function ProfilePreferences() {
             >
               {status}
             </p>
+          )}
+          {showEnablePush && (
+            <button
+              type="button"
+              onClick={() => void push.enable()}
+              disabled={push.busy}
+              className="mt-2 ms-12 rounded-xl border border-primary/20 bg-primary/10 px-3 py-1.5 text-[11px] font-bold text-primary transition-all active:scale-95 disabled:opacity-50"
+            >
+              فعال‌سازی اعلان سیستمی
+            </button>
           )}
         </div>
       </Card>
