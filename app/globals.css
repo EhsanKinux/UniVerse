@@ -58,6 +58,21 @@
 
   --animate-fade-in-up: fade-in-up 0.5s ease-out both;
   --animate-hero-zoom: hero-zoom 18s ease-out both;
+  --animate-aurora: aurora-drift 22s ease-in-out infinite alternate;
+}
+
+/* Ambient drift for the onboarding aurora blobs — slow enough to feel like
+   atmosphere, not animation. Blobs offset each other via animation-delay. */
+@keyframes aurora-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, -6%, 0) scale(1.12);
+  }
+  to {
+    transform: translate3d(-3%, 5%, 0) scale(0.94);
+  }
 }
 
 @keyframes fade-in-up {
