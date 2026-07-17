@@ -80,25 +80,32 @@ export const moduleGroups = {
 
 export const sectionPages = {
   educational: {
+    href: "/educational",
+    icon: DashboardSquare03Icon,
     eyebrow: "امور آموزشی",
     title: "بخش آموزشی",
     description: "چارت، تقویم و دروس ارائه‌شده را در یک فضای سریع و منظم دنبال کنید.",
     modules: moduleGroups.educational,
-    stats: ["۳ سرویس", "آماده توسعه", "موبایل‌فرست"],
+    // One soft glow per service, in the same order and hue as the modules above.
+    aura: ["bg-violet-500/20", "bg-sky-500/20", "bg-emerald-500/20"],
   },
   services: {
+    href: "/services",
+    icon: Building05Icon,
     eyebrow: "خدمات دانشگاهی",
     title: "بخش خدمات دانشگاهی",
     description: "سامانه‌ها، تماس‌ها و فرایندهای اداری را با دسترسی مستقیم مدیریت کنید.",
     modules: moduleGroups.services,
-    stats: ["۳ سرویس", "دسترسی فوری", "فرایندمحور"],
+    aura: ["bg-indigo-500/20", "bg-rose-500/20", "bg-cyan-500/20"],
   },
   student: {
+    href: "/student",
+    icon: SchoolIcon,
     eyebrow: "زندگی دانشجویی",
     title: "بخش دانشجویی",
     description: "غذا، برنامه هفتگی و گروه‌ها را برای کارهای روزانه دانشجو یکجا ببینید.",
     modules: moduleGroups.student,
-    stats: ["۳ سرویس", "روزمره", "کاربردی"],
+    aura: ["bg-orange-500/20", "bg-teal-500/20", "bg-fuchsia-500/20"],
   },
 } as const;
 
