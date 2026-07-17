@@ -37,6 +37,12 @@ export const newsKeys = {
   detail: (id: string) => [...newsKeys.all, "detail", id] as const,
 };
 
+export const dormKeys = {
+  all: ["dorm"] as const,
+  hub: () => [...dormKeys.all, "hub"] as const,
+  announcement: (id: string) => [...dormKeys.all, "announcement", id] as const,
+};
+
 export const scheduleKeys = {
   all: ["schedule"] as const,
   weekly: () => [...scheduleKeys.all, "weekly"] as const,

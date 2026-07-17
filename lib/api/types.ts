@@ -370,6 +370,86 @@ export type NewsStreamEvent =
   | { type: "ping" };
 
 // -----------------------------------------------------------------------------
+// Dormitory / خوابگاه (GET /dorm, SSE GET /dorm/announcements/stream)
+// -----------------------------------------------------------------------------
+// Mirrors univers-backend/src/dorm/dto/dorm.dto.ts. Keep in sync with the server.
+
+export type DormAnnouncementCategory =
+  | "general"
+  | "facility"
+  | "financial"
+  | "event"
+  | "maintenance";
+
+/** One dorm announcement, pre-formatted by the server for display. Deliberately
+ *  the SAME shape as NewsItem so it can flow through the shared notification UI. */
+export interface DormAnnouncement {
+  id: string;
+  title: string;
+  /** Slug; widen to string so an unknown server category never breaks the type. */
+  category: DormAnnouncementCategory | string;
+  categoryLabel: string;
+  body: string;
+  link: string | null;
+  pinned: boolean;
+  publishedAt: string;
+  dateLabel: string;
+  /** Whether this item has a cover image (stream it via `dormApi.coverUrl`). */
+  hasCover: boolean;
+  attachmentCount: number;
+}
+
+/** One file attached to a dorm announcement. Build its URL with `dormApi.attachmentUrl(id)`. */
+export interface DormAnnouncementAttachment {
+  id: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  sizeLabel: string;
+}
+
+/** Full payload of GET /dorm/announcements/:id — the list fields plus files. */
+export interface DormAnnouncementDetail extends DormAnnouncement {
+  attachments: DormAnnouncementAttachment[];
+}
+
+/** One rule or facility row (the قوانین/امکانات lists share this shape). */
+export interface DormInfoItem {
+  id: string;
+  title: string;
+  /** Optional secondary line (hours / elaboration). */
+  detail: string | null;
+}
+
+/** One downloadable dorm form. Build its URL with `dormApi.formFileUrl(id)`. */
+export interface DormForm {
+  id: string;
+  title: string;
+  description: string | null;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  sizeLabel: string;
+}
+
+/** Full payload of GET /dorm — the whole خوابگاه hub in one call. */
+export interface DormHub {
+  announcements: DormAnnouncement[];
+  rules: DormInfoItem[];
+  facilities: DormInfoItem[];
+  forms: DormForm[];
+}
+
+/**
+ * One frame from the SSE stream GET /dorm/announcements/stream. `created`/`updated`
+ * carry the full item; `deleted` carries only its id; `ping` is a keep-alive.
+ */
+export type DormStreamEvent =
+  | { type: "created" | "updated"; item: DormAnnouncement }
+  | { type: "deleted"; id: string }
+  | { type: "ping" };
+
+// -----------------------------------------------------------------------------
 // Weekly schedule (GET/POST/PATCH/DELETE /schedule/…) — authenticated
 // -----------------------------------------------------------------------------
 // Mirrors univers-backend/src/schedule/dto. Keep in sync with the server.
