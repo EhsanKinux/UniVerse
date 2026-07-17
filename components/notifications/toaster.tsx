@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 export interface ToastData {
   id: string;
   item: NewsItem;
+  /** Small label above the title, e.g. «خبر جدید» or «اطلاعیهٔ خوابگاه». */
+  eyebrow?: string;
 }
 
 const TOAST_MS = 6000;
@@ -70,7 +72,7 @@ function ToastCard({
 
       <div className="min-w-0 flex-1">
         <span className="text-[11px] font-medium text-muted-foreground">
-          خبر جدید · {item.categoryLabel}
+          {toast.eyebrow ?? "خبر جدید"} · {item.categoryLabel}
         </span>
         <p className="mt-0.5 line-clamp-1 text-sm font-bold text-foreground">{item.title}</p>
         <p className="mt-0.5 line-clamp-2 text-xs leading-5 text-muted-foreground">{item.body}</p>

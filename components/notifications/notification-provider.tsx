@@ -10,9 +10,11 @@ import {
   useState,
 } from "react";
 
+import { useDorm } from "@/hooks/dorm/use-dorm";
+import { useDormStream } from "@/hooks/dorm/use-dorm-stream";
 import { useNews } from "@/hooks/news/use-news";
 import { useNewsStream } from "@/hooks/news/use-news-stream";
-import type { NewsItem } from "@/lib/api/types";
+import type { DormAnnouncement, NewsItem } from "@/lib/api/types";
 import {
   MAX_NOTIFICATIONS,
   loadLastSeenAt,
@@ -52,6 +54,26 @@ function toNotification(item: NewsItem, read: boolean): AppNotification {
     categoryLabel: item.categoryLabel,
     dateLabel: item.dateLabel,
     link: item.link,
+    read,
+    receivedAt: Date.now(),
+  };
+}
+
+/** Where a dorm announcement notification routes (its detail page inside خوابگاه). */
+const dormRoute = (id: string) => `/dormitory/announcements/${id}`;
+
+/** Map a dorm announcement to a bell entry. Unlike news, the `link` is ALWAYS the
+ *  detail route, so the bell/toast never fall back to the news `/news/:id` path. */
+function toDormNotification(item: DormAnnouncement, read: boolean): AppNotification {
+  return {
+    id: item.id,
+    newsId: item.id,
+    title: item.title,
+    body: item.body,
+    category: item.category,
+    categoryLabel: item.categoryLabel,
+    dateLabel: item.dateLabel,
+    link: dormRoute(item.id),
     read,
     receivedAt: Date.now(),
   };
@@ -114,6 +136,30 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   useNewsStream(handleCreated);
 
+  // A brand-new dorm announcement arrived over SSE → unread entry + a toast. Same
+  // shape as news, but its toast eyebrow + link mark it as a خوابگاه item.
+  const handleCreatedDorm = useCallback(
+    (item: DormAnnouncement) => {
+      if (listRef.current.some((n) => n.newsId === item.id)) return; // de-dupe
+      commit([toDormNotification(item, false), ...listRef.current]);
+      if (getNotificationsEnabled()) {
+        setToasts((prev) =>
+          [
+            {
+              id: `${item.id}:${Date.now()}`,
+              item: { ...item, link: dormRoute(item.id) },
+              eyebrow: "اطلاعیهٔ خوابگاه",
+            },
+            ...prev,
+          ].slice(0, 3),
+        );
+      }
+    },
+    [commit],
+  );
+
+  useDormStream(handleCreatedDorm);
+
   // Backfill the bell from the current news list. Items published after the
   // watermark arrived while the app was closed (the SSE event was missed), so
   // they surface as UNREAD up top; anything older is just history, added read.
@@ -132,6 +178,25 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     const history = additions.filter((n) => n.read);
     commit([...fresh, ...listRef.current, ...history]);
   }, [newsList, commit]);
+
+  // The SAME backfill for dorm announcements, so the bell shows them (and lights
+  // for any that were published while the app was closed) alongside news.
+  const { data: dormHub } = useDorm();
+  useEffect(() => {
+    const dormList = dormHub?.announcements;
+    if (!dormList || !hydrated.current) return;
+    const known = new Set(listRef.current.map((n) => n.newsId));
+    const missing = dormList.filter((item) => !known.has(item.id));
+    if (missing.length === 0) return;
+    const additions = missing.map((item) => {
+      const publishedAt = Date.parse(item.publishedAt);
+      const isNew = Number.isFinite(publishedAt) && publishedAt > lastSeenRef.current;
+      return toDormNotification(item, !isNew);
+    });
+    const fresh = additions.filter((n) => !n.read);
+    const history = additions.filter((n) => n.read);
+    commit([...fresh, ...listRef.current, ...history]);
+  }, [dormHub, commit]);
 
   const markSeenNow = useCallback(() => {
     lastSeenRef.current = Date.now();
