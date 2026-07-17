@@ -3,10 +3,11 @@ import Image from "next/image";
 export function SplashScreen() {
   return (
     <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-background text-foreground">
-      {/* Background Glow */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+      {/* Aurora — same palette language as the onboarding slides */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/20 blur-[100px] motion-safe:animate-aurora motion-reduce:animate-none" />
+        <div className="absolute top-[10%] -right-20 h-60 w-60 rounded-full bg-computer/15 blur-[90px] motion-safe:animate-aurora motion-reduce:animate-none [animation-delay:-9s] [animation-duration:26s]" />
+        <div className="absolute -bottom-16 -left-16 h-60 w-60 rounded-full bg-mining/15 blur-[90px] motion-safe:animate-aurora motion-reduce:animate-none [animation-delay:-16s] [animation-duration:30s]" />
       </div>
 
       <div className="relative z-10 flex flex-col items-center">

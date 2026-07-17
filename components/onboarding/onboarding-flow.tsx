@@ -5,41 +5,65 @@ import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/com
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SplashScreen } from "./splashscreen";
+import { MobileAppsIllustration } from "./illustrations/mobile-apps-illustration";
+import { ScheduleIllustration } from "./illustrations/schedule-illustration";
+import { PushNotificationsIllustration } from "./illustrations/push-notifications-illustration";
+import { EducationIllustration } from "./illustrations/education-illustration";
 
-import Onboarding1 from "@/public/icons/onboarding_1.svg";
-import Onboarding2 from "@/public/icons/onboarding_2.svg";
-import Onboarding3 from "@/public/icons/onboarding_3.svg";
-import Onboarding4 from "@/public/icons/onboarding_4.svg";
+type Chip = { label: string; className: string };
 
-import Image from "next/image";
+const slides: {
+  Illustration: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  title: string;
+  description: string;
+  chips: Chip[];
+}[] = [
+  {
+    Illustration: MobileAppsIllustration,
+    title: "همه‌چیزِ دانشگاه، یک‌جا",
+    description: "برنامه هفتگی، غذا، اطلاعیه‌ها و خدمات خوابگاه — بدون سرگردانی بین چند سامانه، همه در یک اپ.",
+    chips: [
+      { label: "برنامه هفتگی", className: "top-5 -left-2 -rotate-2" },
+      { label: "رزرو غذا", className: "top-1/2 -right-2 rotate-2" },
+      { label: "خدمات خوابگاه", className: "bottom-5 left-6 rotate-1" },
+    ],
+  },
+  {
+    Illustration: ScheduleIllustration,
+    title: "برنامه‌تان، همیشه جلوی چشم",
+    description: "کلاس‌ها، تقویم آموزشی و رویدادهای ترم را مرتب و یک‌جا ببینید تا هیچ جلسه یا امتحانی غافلگیرتان نکند.",
+    chips: [
+      { label: "تقویم آموزشی", className: "top-5 -right-2 rotate-2" },
+      { label: "کلاس‌های امروز", className: "top-1/2 -left-2 -rotate-2" },
+      { label: "رویدادهای ترم", className: "bottom-5 right-8 -rotate-1" },
+    ],
+  },
+  {
+    Illustration: PushNotificationsIllustration,
+    title: "هیچ خبری از قلم نمی‌افتد",
+    description: "اطلاعیه‌های دانشگاه و خوابگاه همان لحظه به گوشی‌تان می‌رسد — حتی وقتی اپ بسته است.",
+    chips: [
+      { label: "اعلان لحظه‌ای", className: "top-5 -left-2 rotate-2" },
+      { label: "اطلاعیه خوابگاه", className: "top-[55%] -right-2 -rotate-2" },
+      { label: "اخبار دانشگاه", className: "bottom-5 left-8 rotate-1" },
+    ],
+  },
+  {
+    Illustration: EducationIllustration,
+    title: "زندگی دانشجویی، هوشمندتر",
+    description: "با حساب دانشجویی خود وارد شوید؛ همه‌چیز برای شروع آماده است.",
+    chips: [
+      { label: "ورود امن", className: "top-6 -right-2 -rotate-2" },
+      { label: "نصب روی گوشی", className: "top-[52%] -left-2 rotate-2" },
+      { label: "سریع و سبک", className: "bottom-5 right-8 rotate-1" },
+    ],
+  },
+];
 
-const slides = [
-  {
-    illustration: Onboarding1,
-    title: "همه چیز دانشگاه در یک جا",
-    description:
-      "به خدمات آموزشی، برنامه هفتگی، غذا، اطلاعیه‌ها و بخش‌های مهم دانشگاه با یک تجربه ساده و سریع دسترسی دارید.",
-    points: ["ناوبری سریع و موبایل‌فرست", "طراحی شبیه اپ واقعی", "ورود بدون شلوغی و پیچیدگی"],
-  },
-  {
-    illustration: Onboarding2,
-    title: "برنامه‌ها و زمان‌بندی",
-    description: "کلاس‌ها، زمان‌های مهم و رویدادها را در یک فضای مرتب ببینید تا کارهای روزانه‌تان سریع‌تر انجام شود.",
-    points: ["مرور ساده اطلاعات", "تمرکز روی کارهای روزانه", "ظاهر شفاف و خوانا"],
-  },
-  {
-    illustration: Onboarding3,
-    title: "اعلان‌های مهم",
-    description: "اطلاعیه‌ها و پیام‌های مهم را در یک رابط سبک و مدرن دنبال کنید تا چیزی از قلم نیفتد.",
-    points: ["نمایش واضح هشدارها", "دسترسی فوری به اخبار", "آماده برای توسعه بعدی"],
-  },
-  {
-    illustration: Onboarding4,
-    title: "زندگی دانشجویی با دانشگاه هوشمند",
-    description: "بعد از این معرفی کوتاه، کاربر مستقیم وارد صفحه ورود می‌شود و تجربه‌ای تمیز و حرفه‌ای خواهد داشت.",
-    points: ["شروع سریع", "ورود امن", "حس اپلیکیشن بومی"],
-  },
-] as const;
+const faDigit = (n: number) => n.toLocaleString("fa-IR");
+
+/** Dot accents cycle through the app's own spectrum: primary + department hues. */
+const chipDots = ["bg-primary", "bg-computer", "bg-mining"];
 
 export function OnboardingFlow({ onFinish }: { onFinish: () => void }) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -72,40 +96,20 @@ export function OnboardingFlow({ onFinish }: { onFinish: () => void }) {
 
   return (
     <div className="relative flex min-h-dvh overflow-hidden bg-background text-foreground">
-      {/* Modern Mesh Background */}
+      {/* Aurora — drawn from the app's own palette: primary blue flanked by the
+          department accents (computer violet, mining teal). */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* Top Glow */}
-        <div className="absolute left-1/2 -top-30 h-105 w-105 -translate-x-1/2 rounded-full bg-primary/15 blur-[120px]" />
-
-        {/* Right Glow */}
-        <div className="absolute -right-30 top-[20%] h-80 w-[320px] rounded-full bg-primary/10 blur-[100px]" />
-
-        {/* Bottom Glow */}
-        <div className="absolute -bottom-30 left-[10%] h-70 w-70 rounded-full bg-primary/10 blur-[100px]" />
-
-        {/* Center Spotlight */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(120,80,255,0.08),transparent_55%)] dark:bg-[radial-gradient(circle_at_top,rgba(120,80,255,0.16),transparent_55%)]" />
-
-        {/* Grid Pattern */}
-        <div
-          className="
-        absolute inset-0
-        opacity-[0.03]
-        dark:opacity-[0.06]
-        bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)]
-        bg-size-[32px_32px]
-      "
-        />
-
-        {/* Fade */}
-        <div className="absolute inset-0 bg-linear-to-b from-transparent via-background/20 to-background" />
+        <div className="absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/20 blur-[110px] motion-safe:animate-aurora motion-reduce:animate-none dark:bg-primary/30" />
+        <div className="absolute top-[16%] -right-28 h-80 w-80 rounded-full bg-computer/15 blur-[100px] motion-safe:animate-aurora motion-reduce:animate-none [animation-delay:-9s] [animation-duration:26s] dark:bg-computer/25" />
+        <div className="absolute -bottom-24 -left-20 h-80 w-80 rounded-full bg-mining/15 blur-[100px] motion-safe:animate-aurora motion-reduce:animate-none [animation-delay:-16s] [animation-duration:30s] dark:bg-mining/25" />
+        <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-background" />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pb-6 pt-6">
+      <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pb-5 safe-top safe-bottom">
         {/* Top bar */}
-        <div className="mb-6 flex items-center justify-between">
-          <span className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground shadow-sm">
-            {current + 1} / {slides.length}
+        <div className="mb-4 flex items-center justify-between">
+          <span className="rounded-full border border-border/60 bg-card/60 px-3.5 py-1.5 text-xs font-semibold text-muted-foreground shadow-sm backdrop-blur-md tabular-nums">
+            {faDigit(current + 1)} از {faDigit(slides.length)}
           </span>
 
           <Button variant="ghost" size="sm" onClick={onFinish} className="text-muted-foreground hover:text-foreground">
@@ -122,54 +126,84 @@ export function OnboardingFlow({ onFinish }: { onFinish: () => void }) {
             align: "start",
             loop: false,
           }}
-          className="flex-1 bg-transparent"
+          className="min-h-0 flex-1 [&_[data-slot=carousel-content]]:h-full"
         >
-          <CarouselContent className="-ml-4">
-            {slides.map((slide) => {
-              const Illustration = slide.illustration;
+          <CarouselContent className="h-full">
+            {slides.map((slide, i) => {
+              const { Illustration } = slide;
+              const isActive = i === current;
 
               return (
-                <CarouselItem key={slide.title} className="pl-4">
-                  <div className="flex min-h-[70dvh] flex-col">
-                    {/* Illustration (bigger + better spacing) */}
-                    <div className="relative flex flex-[0.55] items-center justify-center">
-                      <div className="absolute h-52 w-52 rounded-full bg-primary/10 blur-3xl" />
+                <CarouselItem key={slide.title} className="h-full">
+                  <div className="flex h-full flex-col">
+                    {/* Glass stage: a consistent home for the illustration in
+                        both themes, with the slide's real features floating
+                        around it as glass chips. */}
+                    <div
+                      className={cn(
+                        "relative mt-2 flex min-h-0 flex-1 items-center justify-center",
+                        isActive && "motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-500",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "relative flex h-full max-h-110 w-full items-center justify-center",
+                          "rounded-4xl border border-white/50 bg-white/40 shadow-xl shadow-primary/5 backdrop-blur-xl",
+                          "dark:border-white/10 dark:bg-white/[0.04]",
+                          // Illustration palette — light
+                          "[--ill-accent:var(--color-primary)] [--ill-ink:#2f2e41] [--ill-ink-2:#3f3d56] [--ill-skin:#ffb8b8]",
+                          "[--ill-neutral:#e8eaf0] [--ill-neutral-2:#c9cdd8] [--ill-paper:#ffffff]",
+                          // Illustration palette — dark (ink flips light, paper flips deep)
+                          "dark:[--ill-ink:#e2e6ee] dark:[--ill-ink-2:#9aa4b6] dark:[--ill-neutral:#39424f]",
+                          "dark:[--ill-neutral-2:#4d5766] dark:[--ill-paper:#232c37]",
+                        )}
+                      >
+                        <div className="absolute h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
 
-                      <Image
-                        src={Illustration}
-                        alt="onboarding_icon"
-                        className="relative z-10 w-full max-w-60 object-contain md:max-w-70"
-                        priority
-                      />
+                        <Illustration className="relative z-10 h-auto w-full max-w-60 p-7 md:max-w-68" />
+
+                        {/* Floating feature chips */}
+                        {slide.chips.map((chip, c) => (
+                          <span
+                            key={chip.label}
+                            className={cn(
+                              "absolute z-20 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold",
+                              "border border-white/60 bg-white/75 text-foreground/80 shadow-md backdrop-blur-md",
+                              "dark:border-white/10 dark:bg-white/10 dark:text-foreground/90",
+                              chip.className,
+                              isActive &&
+                                "motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-75 motion-safe:fill-mode-both motion-safe:duration-500",
+                              isActive && ["motion-safe:delay-200", "motion-safe:delay-300", "motion-safe:delay-500"][c],
+                            )}
+                          >
+                            <span className={cn("h-1.5 w-1.5 rounded-full", chipDots[c % chipDots.length])} />
+                            {chip.label}
+                          </span>
+                        ))}
+                      </div>
                     </div>
 
                     {/* Content */}
-                    <div className="flex flex-[0.45] flex-col justify-start space-y-4 pb-2">
-                      <h2 className="text-center text-2xl md:text-3xl font-extrabold tracking-tight leading-snug">
+                    <div className="flex flex-none flex-col space-y-3.5 px-1 pb-2 pt-7 text-center">
+                      <h2
+                        className={cn(
+                          "text-[1.65rem] font-black leading-[1.35] tracking-tight md:text-3xl",
+                          isActive &&
+                            "motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both motion-safe:duration-500 motion-safe:delay-100",
+                        )}
+                      >
                         {slide.title}
                       </h2>
 
-                      <p className="text-center text-sm md:text-base leading-7 text-muted-foreground px-2">
+                      <p
+                        className={cn(
+                          "mx-auto max-w-xs text-sm leading-7 text-muted-foreground md:text-[15px]",
+                          isActive &&
+                            "motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both motion-safe:duration-500 motion-safe:delay-200",
+                        )}
+                      >
                         {slide.description}
                       </p>
-
-                      {/* Points */}
-                      {/* <div className="mt-3 space-y-2">
-                        {slide.points.map((point) => (
-                          <div
-                            key={point}
-                            className={cn(
-                              "flex items-center gap-3 rounded-2xl",
-                              "bg-muted/40 px-4 py-3",
-                              "transition-all duration-300",
-                              "hover:bg-primary/5",
-                            )}
-                          >
-                            <div className="h-2 w-2 shrink-0 rounded-full bg-primary" />
-                            <span className="text-sm text-foreground/90">{point}</span>
-                          </div>
-                        ))}
-                      </div> */}
                     </div>
                   </div>
                 </CarouselItem>
@@ -179,29 +213,31 @@ export function OnboardingFlow({ onFinish }: { onFinish: () => void }) {
         </Carousel>
 
         {/* Dots */}
-        <div className="mt-4 flex items-center justify-center gap-2">
+        <div className="mt-3 flex items-center justify-center gap-2">
           {slides.map((_, i) => (
             <button
               key={i}
               onClick={() => api?.scrollTo(i)}
+              aria-label={`رفتن به اسلاید ${faDigit(i + 1)}`}
+              aria-current={i === current}
               className={cn(
                 "h-2 rounded-full transition-all duration-300",
-                i === current ? "w-8 bg-primary" : "w-2 bg-muted-foreground/30",
+                i === current ? "w-7 bg-primary" : "w-2 bg-muted-foreground/25 hover:bg-muted-foreground/40",
               )}
             />
           ))}
         </div>
 
         {/* Action */}
-        <div className="mt-6">
+        <div className="mt-5">
           <Button
             size="lg"
             onClick={() => (isLast ? onFinish() : api?.scrollNext())}
             className={cn(
-              "h-13 w-full rounded-3xl text-base font-semibold",
+              "h-13 w-full rounded-full text-base font-bold",
               "bg-primary text-primary-foreground",
-              "shadow-md shadow-primary/20",
-              "hover:opacity-90 transition",
+              "shadow-lg shadow-primary/25",
+              "transition hover:opacity-90 active:scale-[0.98]",
             )}
           >
             {isLast ? "ورود به حساب" : "بعدی"}
