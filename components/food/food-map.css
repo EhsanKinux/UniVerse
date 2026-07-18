@@ -1,0 +1,57 @@
+/* Styles owned by the nearby-food Leaflet map (imported by food-map.tsx, right
+   after leaflet's own stylesheet, so these rules win the cascade).
+
+   The library ships light OSM raster tiles; in dark mode we invert them so the
+   map matches the theme. The user-location dot gets a soft radar pulse. */
+
+.leaflet-container {
+  font-family: inherit;
+  background: var(--muted);
+}
+
+.dark .leaflet-tile {
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9) saturate(0.6);
+}
+
+.dark .leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.6);
+  color: #999;
+}
+
+.dark .leaflet-control-attribution a {
+  color: #bbb;
+}
+
+.dark .leaflet-bar a {
+  background: #1f2937;
+  color: #e5e7eb;
+  border-color: #374151;
+}
+
+.food-map-user-dot {
+  position: relative;
+}
+
+.food-map-user-dot::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  background: rgba(59, 130, 246, 0.25);
+  animation: food-map-pulse 2s ease-out infinite;
+}
+
+@keyframes food-map-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}

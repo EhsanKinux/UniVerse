@@ -12,9 +12,11 @@ import {
 
 import { useDorm } from "@/hooks/dorm/use-dorm";
 import { useDormStream } from "@/hooks/dorm/use-dorm-stream";
+import { useFood } from "@/hooks/food/use-food";
+import { useFoodStream } from "@/hooks/food/use-food-stream";
 import { useNews } from "@/hooks/news/use-news";
 import { useNewsStream } from "@/hooks/news/use-news-stream";
-import type { DormAnnouncement, NewsItem } from "@/lib/api/types";
+import type { DormAnnouncement, FoodAnnouncement, NewsItem } from "@/lib/api/types";
 import {
   MAX_NOTIFICATIONS,
   loadLastSeenAt,
@@ -74,6 +76,26 @@ function toDormNotification(item: DormAnnouncement, read: boolean): AppNotificat
     categoryLabel: item.categoryLabel,
     dateLabel: item.dateLabel,
     link: dormRoute(item.id),
+    read,
+    receivedAt: Date.now(),
+  };
+}
+
+/** Where a food announcement notification routes (its detail page inside تغذیه). */
+const foodRoute = (id: string) => `/food-week/announcements/${id}`;
+
+/** Map a food announcement to a bell entry — same rule as dorm: the `link` is
+ *  ALWAYS the detail route, never the news `/news/:id` fallback. */
+function toFoodNotification(item: FoodAnnouncement, read: boolean): AppNotification {
+  return {
+    id: item.id,
+    newsId: item.id,
+    title: item.title,
+    body: item.body,
+    category: item.category,
+    categoryLabel: item.categoryLabel,
+    dateLabel: item.dateLabel,
+    link: foodRoute(item.id),
     read,
     receivedAt: Date.now(),
   };
@@ -160,6 +182,30 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   useDormStream(handleCreatedDorm);
 
+  // A brand-new food announcement arrived over SSE → unread entry + a toast.
+  // Same shape as dorm, with a تغذیه eyebrow + detail-route link.
+  const handleCreatedFood = useCallback(
+    (item: FoodAnnouncement) => {
+      if (listRef.current.some((n) => n.newsId === item.id)) return; // de-dupe
+      commit([toFoodNotification(item, false), ...listRef.current]);
+      if (getNotificationsEnabled()) {
+        setToasts((prev) =>
+          [
+            {
+              id: `${item.id}:${Date.now()}`,
+              item: { ...item, link: foodRoute(item.id) },
+              eyebrow: "اطلاعیهٔ تغذیه",
+            },
+            ...prev,
+          ].slice(0, 3),
+        );
+      }
+    },
+    [commit],
+  );
+
+  useFoodStream(handleCreatedFood);
+
   // Backfill the bell from the current news list. Items published after the
   // watermark arrived while the app was closed (the SSE event was missed), so
   // they surface as UNREAD up top; anything older is just history, added read.
@@ -197,6 +243,25 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     const history = additions.filter((n) => n.read);
     commit([...fresh, ...listRef.current, ...history]);
   }, [dormHub, commit]);
+
+  // The SAME backfill for food announcements — the bell shows them (and lights
+  // for any published while the app was closed) alongside news and dorm items.
+  const { data: foodHub } = useFood();
+  useEffect(() => {
+    const foodList = foodHub?.announcements;
+    if (!foodList || !hydrated.current) return;
+    const known = new Set(listRef.current.map((n) => n.newsId));
+    const missing = foodList.filter((item) => !known.has(item.id));
+    if (missing.length === 0) return;
+    const additions = missing.map((item) => {
+      const publishedAt = Date.parse(item.publishedAt);
+      const isNew = Number.isFinite(publishedAt) && publishedAt > lastSeenRef.current;
+      return toFoodNotification(item, !isNew);
+    });
+    const fresh = additions.filter((n) => !n.read);
+    const history = additions.filter((n) => n.read);
+    commit([...fresh, ...listRef.current, ...history]);
+  }, [foodHub, commit]);
 
   const markSeenNow = useCallback(() => {
     lastSeenRef.current = Date.now();
