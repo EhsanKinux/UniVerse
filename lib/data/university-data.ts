@@ -58,7 +58,7 @@ export const moduleGroups = {
 
   student: [
     {
-      title: "غذای هفته",
+      title: "تغذیه",
       href: "/food-week",
       icon: RiceBowlIcon,
       tone: "text-orange-600 border-orange-500/15 from-orange-500/18 via-orange-500/8 shadow-orange-500/25 dark:text-orange-300",
@@ -168,10 +168,10 @@ export const modulePages = {
     module: moduleGroups.student[0],
     sectionHref: "/student",
     sectionTitle: "بخش دانشجویی",
-    status: "روزانه",
-    description: "برنامه غذای هفته، رزرو غذا و وضعیت وعده‌ها برای تجربه روزمره دانشجویی طراحی می‌شود.",
-    highlights: ["برنامه هفتگی غذا", "رزرو سریع", "وضعیت وعده‌ها"],
-    primaryAction: "مشاهده غذا",
+    status: "فعال",
+    description: "منوی هفتگی سلف، اطلاعیه‌های تغذیه با اعلان و نقشهٔ زندهٔ خوراکی‌های اطراف دانشگاه.",
+    highlights: ["منوی هفتگی سلف", "اطلاعیه با اعلان", "خوراکی‌های اطراف"],
+    primaryAction: "ورود به تغذیه",
   },
   "weekly-schedule": {
     module: moduleGroups.student[1],
