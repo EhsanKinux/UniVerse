@@ -1,38 +1,38 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkCircle02Icon, Coffee01Icon, RiceBowlIcon, Sun01Icon } from "@hugeicons/core-free-icons";
+import {
+  Attachment01Icon,
+  Megaphone01Icon,
+  RiceBowlIcon,
+} from "@hugeicons/core-free-icons";
 
+import { FoodCoverBanner } from "@/components/food/food-cover-banner";
+import { FoodMenuCard } from "@/components/food/food-menu-card";
+import { FoodPlacesSection } from "@/components/food/food-places-section";
 import { ModuleHero } from "@/components/module/module-hero";
+import { EmptyState, ErrorState, SectionHeading } from "@/components/module/module-ui";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { foodWeek, type Meal } from "@/lib/data/food-data";
-import { cn } from "@/lib/utils";
+import { useFood } from "@/hooks/food/use-food";
+import type { FoodAnnouncement } from "@/lib/api/types";
+import { toPersianDigits } from "@/lib/utils";
 
 const HERO_TONE =
   "text-orange-600 border-orange-500/15 from-orange-500/18 via-orange-500/8 shadow-orange-500/25 dark:text-orange-300";
 
+/**
+ * The تغذیه hub. Reservation itself lives in the university's own اتوماسیون
+ * تغذیه (no API access), so this page is everything AROUND it: the staff-uploaded
+ * weekly menu, a live map of nearby food the student can buy, and the
+ * اطلاعیه‌های تغذیه feed (which also arrives as push notifications).
+ */
 export default function FoodWeekPage() {
-  const todayId = useMemo(() => foodWeek.find((d) => d.isToday)?.id ?? foodWeek[0].id, []);
-  const [activeId, setActiveId] = useState(todayId);
-  // Local reservation overrides keyed by `${dayId}:${meal}`
-  const [overrides, setOverrides] = useState<Record<string, boolean>>({});
+  const { data, isLoading, isError, refetch } = useFood();
 
-  const activeDay = foodWeek.find((d) => d.id === activeId) ?? foodWeek[0];
-
-  const isReserved = (dayId: string, meal: "lunch" | "dinner", fallback: boolean) =>
-    overrides[`${dayId}:${meal}`] ?? fallback;
-
-  const toggle = (dayId: string, meal: "lunch" | "dinner", current: boolean) =>
-    setOverrides((prev) => ({ ...prev, [`${dayId}:${meal}`]: !current }));
-
-  const reservedCount = foodWeek.reduce((sum, day) => {
-    let n = 0;
-    if (isReserved(day.id, "lunch", day.lunch.reserved)) n++;
-    if (isReserved(day.id, "dinner", day.dinner.reserved)) n++;
-    return sum + n;
-  }, 0);
+  const announcements = useMemo(() => data?.announcements ?? [], [data]);
 
   return (
     <div className="space-y-6">
@@ -40,137 +40,110 @@ export default function FoodWeekPage() {
         backHref="/student"
         backLabel="بخش دانشجویی"
         icon={RiceBowlIcon}
-        title="غذای هفته"
-        description="برنامه غذایی هفته را ببینید و وعده‌های خود را رزرو کنید. روزها را از نوار بالا انتخاب کنید."
-        status="روزانه"
+        title="تغذیه"
+        description="منوی هفتگی سلف، اطلاعیه‌های تغذیه و نقشهٔ خوراکی‌های اطراف — رزرو غذا از سامانهٔ رسمی دانشگاه انجام می‌شود."
+        status="فعال"
         tone={HERO_TONE}
-        stats={[
-          { icon: RiceBowlIcon, value: String(foodWeek.length), label: "روز هفته" },
-          { icon: CheckmarkCircle02Icon, value: String(reservedCount), label: "رزرو شده" },
-        ]}
+        stats={
+          announcements.length
+            ? [{ icon: Megaphone01Icon, value: toPersianDigits(announcements.length), label: "اطلاعیه" }]
+            : []
+        }
       />
 
-      {/* Day selector */}
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0 [&::-webkit-scrollbar]:hidden">
-        {foodWeek.map((day) => {
-          const active = day.id === activeId;
-          return (
-            <button
-              key={day.id}
-              onClick={() => setActiveId(day.id)}
-              className={cn(
-                "flex min-w-16 shrink-0 flex-col items-center gap-0.5 rounded-2xl border px-3.5 py-2.5 transition-all active:scale-95",
-                active
-                  ? "border-primary/20 bg-primary/12 text-primary shadow-sm"
-                  : "border-border bg-card/70 text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <span className="text-sm font-bold">{day.label}</span>
-              <span className="text-[10px] opacity-80">{day.date}</span>
-              {day.isToday && (
-                <span className={cn("mt-0.5 size-1.5 rounded-full", active ? "bg-primary" : "bg-emerald-500")} />
-              )}
-            </button>
-          );
-        })}
-      </div>
-
+      {/* Weekly menu (staff-uploaded file) */}
       <section id="content" className="space-y-3">
-        <div className="flex items-center gap-2 px-1">
-          <h2 className="text-lg font-bold text-foreground">{activeDay.label}</h2>
-          <span className="text-sm text-muted-foreground">{activeDay.date}</span>
-          {activeDay.isToday && (
-            <Badge variant="success" className="px-2.5 py-0.5 text-[11px]">
-              امروز
-            </Badge>
-          )}
-        </div>
+        <SectionHeading
+          title="منوی این هفته"
+          subtitle="منوی رسمی سلف که امور تغذیه بارگذاری می‌کند"
+        />
+        {isLoading ? (
+          <div className="h-40 animate-pulse rounded-3xl border border-border bg-card/50" />
+        ) : isError ? (
+          <ErrorState
+            title="دریافت اطلاعات تغذیه ناموفق بود"
+            subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
+            onRetry={() => {
+              refetch();
+            }}
+          />
+        ) : (
+          <FoodMenuCard menu={data?.menu ?? null} />
+        )}
+      </section>
 
-        <div className="grid gap-3 md:grid-cols-2 md:gap-4">
-          <MealCard
-            title="ناهار"
-            icon={Sun01Icon}
-            meal={activeDay.lunch}
-            reserved={isReserved(activeDay.id, "lunch", activeDay.lunch.reserved)}
-            onToggle={() => toggle(activeDay.id, "lunch", isReserved(activeDay.id, "lunch", activeDay.lunch.reserved))}
+      {/* Live nearby-food map (independent of the hub request) */}
+      <FoodPlacesSection />
+
+      {/* Announcements */}
+      <section className="space-y-3">
+        <SectionHeading
+          title="اطلاعیه‌های تغذیه"
+          subtitle="تغییر منو، ساعات کاری سلف و اطلاعیه‌های رسمی — اطلاعیهٔ جدید به‌صورت اعلان ارسال می‌شود"
+        />
+        {isLoading ? (
+          <AnnouncementsSkeleton />
+        ) : isError ? null : announcements.length === 0 ? (
+          <EmptyState
+            icon={Megaphone01Icon}
+            title="اطلاعیه‌ای ثبت نشده است"
+            subtitle="به‌محض انتشار اطلاعیه توسط امور تغذیه، اینجا نمایش داده می‌شود."
           />
-          <MealCard
-            title="شام"
-            icon={Coffee01Icon}
-            meal={activeDay.dinner}
-            reserved={isReserved(activeDay.id, "dinner", activeDay.dinner.reserved)}
-            onToggle={() => toggle(activeDay.id, "dinner", isReserved(activeDay.id, "dinner", activeDay.dinner.reserved))}
-          />
-        </div>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
+            {announcements.map((item) => (
+              <AnnouncementCard key={item.id} item={item} />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
 }
 
-function MealCard({
-  title,
-  icon,
-  meal,
-  reserved,
-  onToggle,
-}: {
-  title: string;
-  icon: Parameters<typeof HugeiconsIcon>[0]["icon"];
-  meal: Meal;
-  reserved: boolean;
-  onToggle: () => void;
-}) {
+function AnnouncementCard({ item }: { item: FoodAnnouncement }) {
   return (
-    <Card className="overflow-hidden p-4">
-      <div className="flex items-center gap-2.5">
-        <div className="flex size-9 items-center justify-center rounded-xl border border-border bg-background text-primary">
-          <HugeiconsIcon icon={icon} size={18} />
+    <Link
+      href={`/food-week/announcements/${item.id}`}
+      className="block h-full transition-transform active:scale-[0.99]"
+    >
+      <Card className="h-full overflow-hidden p-4">
+        {item.hasCover && <FoodCoverBanner id={item.id} alt={item.title} />}
+
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            {item.pinned && (
+              <Badge variant="outline" className="px-2 py-0.5 text-[10px]">
+                📌 مهم
+              </Badge>
+            )}
+            <Badge variant="soft">{item.categoryLabel}</Badge>
+          </div>
+          <time className="shrink-0 text-xs text-muted-foreground">{item.dateLabel}</time>
         </div>
-        <h3 className="text-sm font-bold text-foreground">{title}</h3>
-      </div>
 
-      <div className="mt-3">
-        <p className="text-lg font-bold text-foreground">{meal.items.join("، ")}</p>
-        {meal.sideItems.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {meal.sideItems.map((side) => (
-              <span
-                key={side}
-                className="rounded-full border border-border bg-background/70 px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground"
-              >
-                {side}
-              </span>
-            ))}
+        <h3 className="mt-3 line-clamp-1 text-base font-bold text-foreground">{item.title}</h3>
+        <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground">{item.body}</p>
+
+        {item.attachmentCount > 0 && (
+          <div className="mt-3 flex items-center gap-4 border-t border-border pt-3 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
+              <HugeiconsIcon icon={Attachment01Icon} size={14} />
+              {toPersianDigits(item.attachmentCount)} پیوست
+            </span>
           </div>
         )}
-      </div>
+      </Card>
+    </Link>
+  );
+}
 
-      <div className="mt-4">
-        {!meal.available ? (
-          <div className="rounded-2xl border border-dashed border-border bg-muted/40 px-4 py-2.5 text-center text-xs font-medium text-muted-foreground">
-            رزرو این وعده در دسترس نیست
-          </div>
-        ) : (
-          <button
-            onClick={onToggle}
-            className={cn(
-              "flex h-11 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition-all active:scale-[0.98]",
-              reserved
-                ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                : "bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90",
-            )}
-          >
-            {reserved ? (
-              <>
-                <HugeiconsIcon icon={CheckmarkCircle02Icon} size={18} />
-                رزرو شد · لغو رزرو
-              </>
-            ) : (
-              "رزرو این وعده"
-            )}
-          </button>
-        )}
-      </div>
-    </Card>
+function AnnouncementsSkeleton() {
+  return (
+    <div className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="h-36 animate-pulse rounded-3xl border border-border bg-card/50" />
+      ))}
+    </div>
   );
 }
