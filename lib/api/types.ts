@@ -450,6 +450,114 @@ export type DormStreamEvent =
   | { type: "ping" };
 
 // -----------------------------------------------------------------------------
+// Food / تغذیه (GET /food, GET /food/places, SSE GET /food/announcements/stream)
+// -----------------------------------------------------------------------------
+// Mirrors univers-backend/src/food/dto/food.dto.ts. Keep in sync with the server.
+
+export type FoodAnnouncementCategory =
+  | "general"
+  | "menu"
+  | "hours"
+  | "event"
+  | "closure";
+
+/** One food announcement, pre-formatted by the server for display. Deliberately
+ *  the SAME shape as NewsItem/DormAnnouncement so it can flow through the shared
+ *  notification UI. */
+export interface FoodAnnouncement {
+  id: string;
+  title: string;
+  /** Slug; widen to string so an unknown server category never breaks the type. */
+  category: FoodAnnouncementCategory | string;
+  categoryLabel: string;
+  body: string;
+  link: string | null;
+  pinned: boolean;
+  publishedAt: string;
+  dateLabel: string;
+  /** Whether this item has a cover image (stream it via `foodApi.coverUrl`). */
+  hasCover: boolean;
+  attachmentCount: number;
+}
+
+/** One file attached to a food announcement. Build its URL with `foodApi.attachmentUrl(id)`. */
+export interface FoodAnnouncementAttachment {
+  id: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  sizeLabel: string;
+}
+
+/** Full payload of GET /food/announcements/:id — the list fields plus files. */
+export interface FoodAnnouncementDetail extends FoodAnnouncement {
+  attachments: FoodAnnouncementAttachment[];
+}
+
+/** The current weekly menu file. Build its URL with `foodApi.menuFileUrl(id)`. */
+export interface FoodMenu {
+  id: string;
+  /** Optional Persian label naming the menu's week, e.g. «هفتهٔ سوم مهر». */
+  weekLabel: string | null;
+  originalName: string;
+  mimeType: string;
+  /** True when the file is an image the app can render inline (else PDF). */
+  isImage: boolean;
+  size: number;
+  sizeLabel: string;
+  dateLabel: string;
+}
+
+/** Full payload of GET /food — the staff-managed half of the تغذیه page. */
+export interface FoodHub {
+  /** null until staff upload the first weekly menu. */
+  menu: FoodMenu | null;
+  announcements: FoodAnnouncement[];
+}
+
+/** Normalised category slug of a nearby food place (OpenStreetMap POI). */
+export type FoodPlaceCategory =
+  | "restaurant"
+  | "fast_food"
+  | "cafe"
+  | "food_court"
+  | "ice_cream"
+  | "bakery"
+  | "confectionery"
+  | "supermarket"
+  | "other";
+
+/** One nearby food place from GET /food/places — a live OpenStreetMap POI. */
+export interface FoodPlace {
+  /** Stable OSM element id ("node/…" or "way/…"). */
+  id: string;
+  name: string;
+  /** Slug; widen to string so an unknown server category never breaks the type. */
+  category: FoodPlaceCategory | string;
+  categoryLabel: string;
+  lat: number;
+  lng: number;
+  /** Metres from the requested point. */
+  distance: number;
+  distanceLabel: string;
+  phone: string | null;
+  /** Raw OSM opening_hours string, when tagged. */
+  openingHours: string | null;
+  /** Best-effort "open right now"; null = unknown (no badge). */
+  openNow: boolean | null;
+  website: string | null;
+}
+
+/**
+ * One frame from the SSE stream GET /food/announcements/stream. `created`/`updated`
+ * carry the full item; `deleted` carries only its id; `ping` is a keep-alive.
+ */
+export type FoodStreamEvent =
+  | { type: "created" | "updated"; item: FoodAnnouncement }
+  | { type: "deleted"; id: string }
+  | { type: "ping" };
+
+// -----------------------------------------------------------------------------
 // Weekly schedule (GET/POST/PATCH/DELETE /schedule/…) — authenticated
 // -----------------------------------------------------------------------------
 // Mirrors univers-backend/src/schedule/dto. Keep in sync with the server.

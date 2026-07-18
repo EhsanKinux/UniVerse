@@ -17,6 +17,21 @@ function readApiBaseUrl(): string {
   return raw.replace(/\/+$/, "");
 }
 
+/**
+ * Where the nearby-food map centres when the user denies (or the device lacks)
+ * geolocation. Defaults to Tehran's Enghelab Square until the real campus
+ * coordinates are configured — set NEXT_PUBLIC_CAMPUS_LAT/LNG in .env.
+ */
+function readCampusCenter(): { lat: number; lng: number } {
+  const lat = Number(process.env.NEXT_PUBLIC_CAMPUS_LAT);
+  const lng = Number(process.env.NEXT_PUBLIC_CAMPUS_LNG);
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    return { lat, lng };
+  }
+  return { lat: 35.7009, lng: 51.3919 };
+}
+
 export const env = {
   apiBaseUrl: readApiBaseUrl(),
+  campusCenter: readCampusCenter(),
 } as const;

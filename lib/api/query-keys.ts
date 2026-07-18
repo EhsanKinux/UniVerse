@@ -43,6 +43,16 @@ export const dormKeys = {
   announcement: (id: string) => [...dormKeys.all, "announcement", id] as const,
 };
 
+export const foodKeys = {
+  all: ["food"] as const,
+  hub: () => [...foodKeys.all, "hub"] as const,
+  announcement: (id: string) => [...foodKeys.all, "announcement", id] as const,
+  // Places are keyed by the rounded search point so a small GPS drift reuses the
+  // cache instead of refetching (the server rounds the same way).
+  places: (lat: number, lng: number, radius: number) =>
+    [...foodKeys.all, "places", lat.toFixed(3), lng.toFixed(3), radius] as const,
+};
+
 export const scheduleKeys = {
   all: ["schedule"] as const,
   weekly: () => [...scheduleKeys.all, "weekly"] as const,
