@@ -11,6 +11,7 @@ import { Mail01Icon, UserIcon, AlertCircleIcon } from "@hugeicons/core-free-icon
 
 import { Button } from "@/components/ui/button";
 import { useLogin, useRegister } from "@/hooks/auth";
+import { toPersianDigits } from "@/lib/utils";
 import { signInSchema, signUpSchema, type AuthFormValues } from "@/lib/validations/auth";
 import { FormField } from "./form-field";
 import { PasswordField } from "./password-field";
@@ -70,7 +71,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
   const activeMutation = isSignUp ? register : login;
   const busy = activeMutation.isPending;
-  const serverError = activeMutation.error?.message ?? null;
+  const serverError = activeMutation.error ?? null;
 
   function onSubmit(values: AuthFormValues) {
     setSsoNote(null);
@@ -84,7 +85,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           onSuccess: () => router.replace(safeRedirectTarget()),
           onError: (err) => {
             // Surface "email already in use" right on the field.
-            if (err.status === 409) setError("email", { message: err.message });
+            if (err.code === "EMAIL_TAKEN") setError("email", { message: err.message });
           },
         },
       );
@@ -123,7 +124,20 @@ export function AuthForm({ mode }: { mode: Mode }) {
               className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/8 px-3 py-2.5 text-xs leading-5 text-destructive"
             >
               <HugeiconsIcon icon={AlertCircleIcon} className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
-              <span>{serverError}</span>
+              <div className="min-w-0 space-y-1">
+                <p>{serverError.message}</p>
+                {serverError.retryAfter != null && (
+                  <p className="opacity-90">
+                    لطفاً {formatWait(serverError.retryAfter)} دیگر دوباره تلاش کنید.
+                  </p>
+                )}
+                {/* The technical line. Meaningless to most students, but it is
+                    what turns "it says there's an error" into a report we can
+                    actually trace — the code plus the server-side request id. */}
+                <p dir="ltr" className="font-mono text-[10px] opacity-60">
+                  {serverError.diagnostic}
+                </p>
+              </div>
             </div>
           )}
 
@@ -200,6 +214,12 @@ export function AuthForm({ mode }: { mode: Mode }) {
       </p>
     </div>
   );
+}
+
+/** Seconds → a Persian wait the student can act on ("۵ دقیقه", "۴۵ ثانیه"). */
+function formatWait(seconds: number): string {
+  if (seconds < 90) return `${toPersianDigits(Math.max(1, Math.round(seconds)))} ثانیه`;
+  return `${toPersianDigits(Math.ceil(seconds / 60))} دقیقه`;
 }
 
 function Spinner() {
