@@ -116,11 +116,55 @@ export interface UpdateProfilePayload {
   telegram?: string | null;
 }
 
-/** Shape of a NestJS error body (from HttpException / ValidationPipe). */
+/**
+ * Stable failure vocabulary returned by the API as `code`.
+ * Mirrors univers-backend/src/common/errors/api-error.ts — keep in sync.
+ *
+ * Branch on THIS, never on the message text: a status alone can't tell
+ * "wrong password" (stay on the form) from "your session ended" (sign out)
+ * from "the server is rate-limiting you" (wait and retry).
+ */
+export type ApiErrorCode =
+  | "VALIDATION_FAILED"
+  | "BAD_REQUEST"
+  | "INVALID_CREDENTIALS"
+  | "TOKEN_MISSING"
+  | "TOKEN_EXPIRED"
+  | "TOKEN_INVALID"
+  | "REFRESH_REJECTED"
+  | "ACCOUNT_GONE"
+  | "UNAUTHORIZED"
+  | "FORBIDDEN"
+  | "WRONG_PASSWORD"
+  | "NOT_FOUND"
+  | "EMAIL_TAKEN"
+  | "CONFLICT"
+  | "PAYLOAD_TOO_LARGE"
+  | "UNSUPPORTED_MEDIA_TYPE"
+  | "RATE_LIMITED"
+  | "DATABASE_UNAVAILABLE"
+  | "INTERNAL_ERROR"
+  // Client-side only: the request never reached the server, so there is no
+  // status and no body (offline, DNS/TLS failure, timeout, or a CORS refusal).
+  | "NETWORK_UNREACHABLE"
+  | "TIMEOUT"
+  | "UNKNOWN";
+
+/**
+ * Shape of an API error body. `code`/`requestId` come from the current backend
+ * envelope; the rest stay optional so an older server (or a proxy's own error
+ * page) still parses instead of throwing.
+ */
 export interface ApiErrorBody {
   statusCode: number;
-  /** A single message, or an array of validation messages. */
+  code?: ApiErrorCode;
+  /** A single message, or an array of validation messages (older shape). */
   message: string | string[];
+  details?: string[];
+  /** Seconds to wait before retrying — present on 429. */
+  retryAfter?: number;
+  /** Correlates with the server log line for this exact failure. */
+  requestId?: string;
   error?: string;
 }
 

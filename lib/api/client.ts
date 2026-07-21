@@ -1,7 +1,7 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 import { env } from "@/lib/env";
-import { normalizeError } from "./errors";
+import { ApiError, normalizeError } from "./errors";
 import { tokenStorage } from "./token-storage";
 import type { AuthResponse } from "./types";
 
@@ -38,6 +38,10 @@ export const apiClient = axios.create({
   headers: { "Content-Type": "application/json" },
   // Send cookies on cross-origin requests (backend has CORS credentials: true).
   withCredentials: true,
+  // Without a timeout a request can hang until the OS gives up (minutes) — on a
+  // flaky campus connection the app just spins with no error at all. 20s is far
+  // beyond any healthy response and turns a hang into a clear TIMEOUT.
+  timeout: 20_000,
 });
 
 // Request: attach the current access token as a Bearer header.
@@ -60,18 +64,52 @@ let refreshPromise: Promise<string> | null = null;
 
 async function performRefresh(): Promise<string> {
   const refreshToken = tokenStorage.getRefreshToken();
-  if (!refreshToken) throw new Error("No refresh token available");
+  if (!refreshToken) {
+    throw new ApiError({
+      message: "نشست شما به پایان رسیده است. دوباره وارد شوید.",
+      status: 401,
+      code: "REFRESH_REJECTED",
+      serverMessage: "No refresh token in storage",
+    });
+  }
 
-  // Use a bare axios call (no interceptors) so the request interceptor doesn't
-  // overwrite the Authorization header with the *access* token. The refresh
-  // endpoint authenticates with the REFRESH token in the Bearer header.
-  const { data } = await axios.post<AuthResponse>(`${env.apiBaseUrl}/auth/refresh`, null, {
-    headers: { Authorization: `Bearer ${refreshToken}` },
-    withCredentials: true,
-  });
+  try {
+    // Use a bare axios call (no interceptors) so the request interceptor doesn't
+    // overwrite the Authorization header with the *access* token. The refresh
+    // endpoint authenticates with the REFRESH token in the Bearer header.
+    const { data } = await axios.post<AuthResponse>(`${env.apiBaseUrl}/auth/refresh`, null, {
+      headers: { Authorization: `Bearer ${refreshToken}` },
+      withCredentials: true,
+      timeout: 20_000,
+    });
 
-  tokenStorage.setTokens(data); // persist the rotated pair
-  return data.accessToken;
+    tokenStorage.setTokens(data); // persist the rotated pair
+    return data.accessToken;
+  } catch (error) {
+    // Normalize here so the caller can inspect WHY it failed — that distinction
+    // is the whole point (see below).
+    throw normalizeError(error);
+  }
+}
+
+/**
+ * Did the refresh fail because the session is genuinely over — or because
+ * something transient got in the way?
+ *
+ * This distinction was the bug. The old code signed the student out on ANY
+ * refresh failure, so a rate-limited refresh, a 30-second backend restart or a
+ * dropped Wi-Fi packet all read as "your session expired": the app wiped the
+ * tokens and bounced them to sign-in. They'd then try to log back in — and,
+ * because the same rate limit was still counting, that login could fail too.
+ *
+ * Only the server explicitly REFUSING the refresh token ends a session.
+ */
+function refreshFailureEndsSession(error: ApiError): boolean {
+  if (error.code === "RATE_LIMITED" || error.code === "TIMEOUT") return false;
+  if (error.code === "NETWORK_UNREACHABLE") return false;
+  if (error.status >= 500 || error.status === 0) return false;
+  // 401/403 from /auth/refresh: the token is expired, revoked or superseded.
+  return error.status === 401 || error.status === 403;
 }
 
 type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
@@ -102,6 +140,14 @@ apiClient.interceptors.response.use(
       return Promise.reject(normalizeError(error));
     }
 
+    // A 401 the refresh flow can't fix: the account is gone, or the token was
+    // already rejected as revoked. Retrying would just fail again.
+    const original401 = normalizeError(error);
+    if (original401.code === "ACCOUNT_GONE") {
+      handleUnauthorized();
+      return Promise.reject(original401);
+    }
+
     // `original` is now narrowed to a defined config.
     original._retry = true;
 
@@ -113,10 +159,18 @@ apiClient.interceptors.response.use(
 
       original.headers.set("Authorization", `Bearer ${newAccessToken}`);
       return await apiClient(original);
-    } catch {
-      // Refresh failed (expired/revoked/rotated) — end the session.
-      handleUnauthorized();
-      return Promise.reject(normalizeError(error));
+    } catch (refreshError) {
+      const failure = normalizeError(refreshError);
+
+      if (refreshFailureEndsSession(failure)) {
+        handleUnauthorized();
+        return Promise.reject(failure);
+      }
+
+      // Transient: keep the session intact and report the REAL reason (rate
+      // limited / server down / offline) instead of a misleading "session
+      // expired". The next attempt can succeed without signing in again.
+      return Promise.reject(failure);
     }
   },
 );
