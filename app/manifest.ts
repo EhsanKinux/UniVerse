@@ -12,8 +12,10 @@ export default function manifest(): MetadataRoute.Manifest {
     // Prefer the most app-like display mode the platform supports, falling back gracefully.
     display_override: ["standalone", "minimal-ui"],
     orientation: "portrait",
-    background_color: "#081120",
-    theme_color: "#081120",
+    // Android's splash screen and task-switcher chrome. Keep in sync with the
+    // dark --background in app/globals.css (and viewport.themeColor in layout.tsx).
+    background_color: "#12171f",
+    theme_color: "#12171f",
     lang: "fa",
     dir: "rtl",
     categories: ["education", "productivity", "utilities"],
