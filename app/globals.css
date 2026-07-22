@@ -142,39 +142,45 @@
 }
 
 .dark {
-  --background: oklch(0.148 0.004 228.8);
-  --foreground: oklch(0.987 0.002 197.1);
-  --card: oklch(0.218 0.008 223.9);
-  --card-foreground: oklch(0.987 0.002 197.1);
-  --popover: oklch(0.218 0.008 223.9);
-  --popover-foreground: oklch(0.987 0.002 197.1);
+  --background: oklch(0.203 0.018 260);
+  --foreground: oklch(0.944 0.011 257);
+  --card: oklch(0.255 0.027 262);
+  --card-foreground: oklch(0.944 0.011 257);
+  --popover: oklch(0.277 0.028 264);
+  --popover-foreground: oklch(0.944 0.011 257);
   /* Lifted from blue-800 to blue-500: dark surfaces need a brighter primary
      for legible text-primary / visible bg-primary. Matches --sidebar-primary. */
   --primary: oklch(0.623 0.214 259.815);
   --primary-foreground: oklch(0.97 0.014 254.604);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.275 0.011 216.9);
-  --muted-foreground: oklch(0.723 0.014 214.4);
-  --accent: oklch(0.275 0.011 216.9);
-  --accent-foreground: oklch(0.987 0.002 197.1);
+  /* Was zinc-tinted (hue 286) while everything around it was slate — the seam
+     showed on secondary buttons. Now on the same 258° axis as the rest. */
+  --secondary: oklch(0.287 0.025 258);
+  --secondary-foreground: oklch(0.944 0.011 257);
+  --muted: oklch(0.287 0.025 258);
+  --muted-foreground: oklch(0.724 0.029 255);
+  /* One rung above --muted so hover/active states are visible on their own
+     rather than relying on a ring. */
+  --accent: oklch(0.319 0.028 259);
+  --accent-foreground: oklch(0.969 0.008 254);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.56 0.021 213.5);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.512 0.032 253);
   --chart-1: oklch(0.837 0.128 66.29);
   --chart-2: oklch(0.705 0.213 47.604);
   --chart-3: oklch(0.646 0.222 41.116);
   --chart-4: oklch(0.553 0.195 38.402);
   --chart-5: oklch(0.47 0.157 37.304);
-  --sidebar: oklch(0.218 0.008 223.9);
-  --sidebar-foreground: oklch(0.987 0.002 197.1);
+  /* Sits just above the page and just below the cards it contains, so the rail
+     reads as a recessed chrome surface rather than a floating panel. */
+  --sidebar: oklch(0.225 0.022 260);
+  --sidebar-foreground: oklch(0.944 0.011 257);
   --sidebar-primary: oklch(0.623 0.214 259.815);
   --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
-  --sidebar-accent: oklch(0.275 0.011 216.9);
-  --sidebar-accent-foreground: oklch(0.987 0.002 197.1);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.56 0.021 213.5);
+  --sidebar-accent: oklch(0.287 0.025 258);
+  --sidebar-accent-foreground: oklch(0.969 0.008 254);
+  --sidebar-border: oklch(1 0 0 / 9%);
+  --sidebar-ring: oklch(0.512 0.032 253);
 
   /* Department accent colors — dark (lifted for contrast on dark bg) */
   --computer: oklch(0.72 0.16 280);
@@ -248,6 +254,26 @@ img,
 svg,
 a {
   -webkit-user-drag: none;
+}
+
+/* Ambient page glow (see the background layer in app/layout.tsx).
+   One wide, low-opacity brand light overhead. The dark theme needs a stronger
+   mix than light because it sits on a much lower base lightness — and it's
+   tinted with --primary rather than white, since a white wash on a dark slate
+   just desaturates it to grey. */
+.app-ambient {
+  background-image: radial-gradient(
+    115% 55% at 50% -8%,
+    color-mix(in oklab, var(--primary) 7%, transparent),
+    transparent 70%
+  );
+}
+.dark .app-ambient {
+  background-image: radial-gradient(
+    115% 55% at 50% -8%,
+    color-mix(in oklab, var(--primary) 15%, transparent),
+    transparent 72%
+  );
 }
 
 /* Safe-area utilities (unlayered so they always win over Tailwind padding).
