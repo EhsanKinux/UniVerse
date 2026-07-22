@@ -7,6 +7,7 @@ import { SectionPage } from "@/components/layout/section-page";
 import { AnnouncementsCarousel } from "@/components/home/announcements-carousel";
 import { HomeHero } from "@/components/home/home-hero";
 import { TodayClassesCard } from "@/components/home/today-classes-card";
+import { InstallCard } from "@/components/pwa/install-card";
 
 const quickAccessModules = [
   moduleGroups.educational[1], // تقویم آموزشی
@@ -19,6 +20,10 @@ export default function HomeTab() {
   return (
     <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,21rem)] lg:items-start lg:gap-7 xl:grid-cols-[minmax(0,1fr)_minmax(0,23rem)]">
       <div className="space-y-7">
+        {/* Renders itself away once installed / dismissed, so it doesn't push
+            the hero down for users who already have the app. */}
+        <InstallCard />
+
         <HomeHero />
 
         <div className="lg:hidden motion-safe:animate-fade-in-up motion-safe:[animation-delay:100ms]">
