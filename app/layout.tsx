@@ -5,8 +5,8 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { FirstLaunchGate } from "@/components/onboarding/first-launch-gate";
 import { Providers } from "@/components/providers";
-import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { InsecureContextHint } from "@/components/pwa/insecure-context-hint";
+import { INSTALL_BOOTSTRAP_SCRIPT } from "@/lib/pwa/install-store";
 import { appleStartupImages } from "./apple-splash-screens";
 
 const APP_NAME = "Universe";
@@ -36,6 +36,14 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/splash/apple-icon-180.png", sizes: "180x180", type: "image/png" }],
   },
+  other: {
+    // `appleWebApp.capable` only emits the modern `mobile-web-app-capable`
+    // (see node_modules/next/dist/lib/metadata/metadata.js). Safari didn't
+    // honour that alias until 17.4, so without the legacy tag an "Add to Home
+    // Screen" on an older iPhone launches in a Safari tab with the URL bar
+    // instead of standalone. It costs one meta tag to cover those devices.
+    "apple-mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport: Viewport = {
@@ -47,9 +55,10 @@ export const viewport: Viewport = {
   // with env(safe-area-inset-*) in globals.css so nothing is obscured.
   viewportFit: "cover",
   // Match each theme's background so the system chrome blends in.
+  // Keep in sync with --background in app/globals.css (and manifest.ts).
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#081120" },
+    { media: "(prefers-color-scheme: dark)", color: "#12171f" },
   ],
 };
 
@@ -84,18 +93,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       className={cn("h-full antialiased", geistMono.variable, iranSans.variable)}
     >
       <body className="min-h-full bg-background text-foreground font-sans">
-        {/* Global Background Layer */}
-        <div className="fixed inset-0 -z-10 bg-background">
-          {/* Soft gradient for light/dark depth */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
+        {/* Parks Chromium's `beforeinstallprompt` before React hydrates —
+            the event fires once and is otherwise lost. See lib/pwa/install-store.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: INSTALL_BOOTSTRAP_SCRIPT }} />
 
-          {/* Dark mode vignette */}
-          <div className="absolute inset-0 dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_60%)]" />
+        {/* Global background layer. A flat fill reads dead at this lightness, so
+            both themes get a wide, low-opacity brand glow overhead — enough to
+            imply a light source without tinting the surfaces sitting on it. */}
+        <div className="fixed inset-0 -z-10 bg-background">
+          <div className="absolute inset-0 bg-linear-to-br from-primary/6 via-transparent to-transparent" />
+          <div className="app-ambient absolute inset-0" />
         </div>
 
         <Providers>
           <FirstLaunchGate>{children}</FirstLaunchGate>
-          <InstallPrompt />
           <InsecureContextHint />
         </Providers>
       </body>
