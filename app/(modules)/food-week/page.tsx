@@ -14,6 +14,9 @@ import { FoodMenuCard } from "@/components/food/food-menu-card";
 import { FoodPlacesSection } from "@/components/food/food-places-section";
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, ErrorState, SectionHeading } from "@/components/module/module-ui";
+import { SkeletonCardGrid } from "@/components/module/module-skeletons";
+import { LoadSwap } from "@/components/ui/load-swap";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { useFood } from "@/hooks/food/use-food";
@@ -57,19 +60,19 @@ export default function FoodWeekPage() {
           title="منوی این هفته"
           subtitle="منوی رسمی سلف که امور تغذیه بارگذاری می‌کند"
         />
-        {isLoading ? (
-          <div className="h-40 animate-pulse rounded-3xl border border-border bg-card/50" />
-        ) : isError ? (
-          <ErrorState
-            title="دریافت اطلاعات تغذیه ناموفق بود"
-            subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
-            onRetry={() => {
-              refetch();
-            }}
-          />
-        ) : (
-          <FoodMenuCard menu={data?.menu ?? null} />
-        )}
+        <LoadSwap loading={isLoading} skeleton={<Skeleton className="h-40 w-full rounded-3xl" />}>
+          {isError ? (
+            <ErrorState
+              title="دریافت اطلاعات تغذیه ناموفق بود"
+              subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
+              onRetry={() => {
+                refetch();
+              }}
+            />
+          ) : (
+            <FoodMenuCard menu={data?.menu ?? null} />
+          )}
+        </LoadSwap>
       </section>
 
       {/* Live nearby-food map (independent of the hub request) */}
@@ -81,21 +84,21 @@ export default function FoodWeekPage() {
           title="اطلاعیه‌های تغذیه"
           subtitle="تغییر منو، ساعات کاری سلف و اطلاعیه‌های رسمی — اطلاعیهٔ جدید به‌صورت اعلان ارسال می‌شود"
         />
-        {isLoading ? (
-          <AnnouncementsSkeleton />
-        ) : isError ? null : announcements.length === 0 ? (
-          <EmptyState
-            icon={Megaphone01Icon}
-            title="اطلاعیه‌ای ثبت نشده است"
-            subtitle="به‌محض انتشار اطلاعیه توسط امور تغذیه، اینجا نمایش داده می‌شود."
-          />
-        ) : (
-          <div className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
-            {announcements.map((item) => (
-              <AnnouncementCard key={item.id} item={item} />
-            ))}
-          </div>
-        )}
+        <LoadSwap loading={isLoading} skeleton={<AnnouncementsSkeleton />}>
+          {isError ? null : announcements.length === 0 ? (
+            <EmptyState
+              icon={Megaphone01Icon}
+              title="اطلاعیه‌ای ثبت نشده است"
+              subtitle="به‌محض انتشار اطلاعیه توسط امور تغذیه، اینجا نمایش داده می‌شود."
+            />
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
+              {announcements.map((item) => (
+                <AnnouncementCard key={item.id} item={item} />
+              ))}
+            </div>
+          )}
+        </LoadSwap>
       </section>
     </div>
   );
@@ -139,11 +142,5 @@ function AnnouncementCard({ item }: { item: FoodAnnouncement }) {
 }
 
 function AnnouncementsSkeleton() {
-  return (
-    <div className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="h-36 animate-pulse rounded-3xl border border-border bg-card/50" />
-      ))}
-    </div>
-  );
+  return <SkeletonCardGrid count={3} cardClassName="h-36" />;
 }

@@ -9,6 +9,8 @@ import { ArrowRight01Icon, Calendar03Icon, LinkSquare02Icon } from "@hugeicons/c
 import { FoodAttachmentCard } from "@/components/food/food-attachment-card";
 import { NewsBody } from "@/components/news/news-body";
 import { ErrorState, SectionHeading } from "@/components/module/module-ui";
+import { ArticleDetailSkeleton } from "@/components/module/module-skeletons";
+import { LoadSwap } from "@/components/ui/load-swap";
 import { Badge } from "@/components/ui/badge";
 import { useFoodAnnouncement } from "@/hooks/food/use-food-announcement";
 import { foodApi } from "@/lib/api/food.api";
@@ -31,18 +33,17 @@ export default function FoodAnnouncementDetailPage() {
         بازگشت به تغذیه
       </Link>
 
-      {isLoading ? (
-        <DetailSkeleton />
-      ) : isError || !data ? (
-        <ErrorState
-          title="این اطلاعیه یافت نشد"
-          subtitle="ممکن است حذف شده یا هنوز منتشر نشده باشد."
-          onRetry={() => {
-            refetch();
-          }}
-        />
-      ) : (
-        <article className="space-y-5">
+      <LoadSwap loading={isLoading} skeleton={<ArticleDetailSkeleton />}>
+        {isError || !data ? (
+          <ErrorState
+            title="این اطلاعیه یافت نشد"
+            subtitle="ممکن است حذف شده یا هنوز منتشر نشده باشد."
+            onRetry={() => {
+              refetch();
+            }}
+          />
+        ) : (
+          <article className="space-y-5">
           {data.hasCover && <CoverImage id={data.id} alt={data.title} />}
 
           <div className="flex items-center justify-between gap-3">
@@ -72,8 +73,9 @@ export default function FoodAnnouncementDetailPage() {
               </div>
             </section>
           )}
-        </article>
-      )}
+          </article>
+        )}
+      </LoadSwap>
     </div>
   );
 }
@@ -119,17 +121,3 @@ function CoverImage({ id, alt }: { id: string; alt: string }) {
   );
 }
 
-function DetailSkeleton() {
-  return (
-    <div className="space-y-5">
-      <div className="aspect-video w-full animate-pulse rounded-3xl border border-border bg-card/50" />
-      <div className="h-6 w-24 animate-pulse rounded-full bg-muted" />
-      <div className="h-8 w-3/4 animate-pulse rounded-xl bg-muted" />
-      <div className="space-y-2">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-4 w-full animate-pulse rounded bg-muted" />
-        ))}
-      </div>
-    </div>
-  );
-}

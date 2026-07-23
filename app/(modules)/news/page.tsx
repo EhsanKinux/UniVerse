@@ -7,9 +7,11 @@ import { Attachment01Icon, Megaphone01Icon } from "@hugeicons/core-free-icons";
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, ErrorState, FilterChips } from "@/components/module/module-ui";
+import { SkeletonCardGrid, SkeletonFilterChips } from "@/components/module/module-skeletons";
 import { NewsCoverBanner } from "@/components/news/news-cover-banner";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { LoadSwap } from "@/components/ui/load-swap";
 import { useNews } from "@/hooks/news/use-news";
 import type { NewsItem } from "@/lib/api/types";
 import { toPersianDigits } from "@/lib/utils";
@@ -52,41 +54,41 @@ export default function NewsListPage() {
         }
       />
 
-      {isLoading ? (
-        <NewsListSkeleton />
-      ) : isError ? (
-        <ErrorState
-          title="دریافت اخبار ناموفق بود"
-          subtitle={error?.message}
-          onRetry={() => {
-            refetch();
-          }}
-        />
-      ) : items.length === 0 ? (
-        <EmptyState
-          icon={Megaphone01Icon}
-          title="خبری ثبت نشده است"
-          subtitle="به‌محض انتشار خبر یا اطلاعیه، اینجا نمایش داده می‌شود."
-        />
-      ) : (
-        <>
-          <FilterChips options={[...CATEGORY_FILTERS]} value={filter} onChange={setFilter} />
+      <LoadSwap loading={isLoading} skeleton={<NewsListSkeleton />}>
+        {isError ? (
+          <ErrorState
+            title="دریافت اخبار ناموفق بود"
+            subtitle={error?.message}
+            onRetry={() => {
+              refetch();
+            }}
+          />
+        ) : items.length === 0 ? (
+          <EmptyState
+            icon={Megaphone01Icon}
+            title="خبری ثبت نشده است"
+            subtitle="به‌محض انتشار خبر یا اطلاعیه، اینجا نمایش داده می‌شود."
+          />
+        ) : (
+          <div className="space-y-4">
+            <FilterChips options={[...CATEGORY_FILTERS]} value={filter} onChange={setFilter} />
 
-          {filtered.length === 0 ? (
-            <EmptyState
-              icon={Megaphone01Icon}
-              title="خبری در این دسته نیست"
-              subtitle="دستهٔ دیگری را انتخاب کنید."
-            />
-          ) : (
-            <section id="content" className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
-              {filtered.map((item) => (
-                <NewsRow key={item.id} item={item} />
-              ))}
-            </section>
-          )}
-        </>
-      )}
+            {filtered.length === 0 ? (
+              <EmptyState
+                icon={Megaphone01Icon}
+                title="خبری در این دسته نیست"
+                subtitle="دستهٔ دیگری را انتخاب کنید."
+              />
+            ) : (
+              <section id="content" className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
+                {filtered.map((item) => (
+                  <NewsRow key={item.id} item={item} />
+                ))}
+              </section>
+            )}
+          </div>
+        )}
+      </LoadSwap>
     </div>
   );
 }
@@ -120,10 +122,9 @@ function NewsRow({ item }: { item: NewsItem }) {
 
 function NewsListSkeleton() {
   return (
-    <div className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="h-28 animate-pulse rounded-2xl border border-border bg-card/50" />
-      ))}
+    <div className="space-y-4">
+      <SkeletonFilterChips count={5} />
+      <SkeletonCardGrid count={6} cardClassName="h-32" />
     </div>
   );
 }

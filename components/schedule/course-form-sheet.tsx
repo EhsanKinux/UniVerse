@@ -205,7 +205,12 @@ function CourseForm({ course, onDone }: { course: Course | null; onDone: () => v
 
         {/* ---- Actions ---- */}
         <div className="flex items-center gap-2 pt-1">
-          <Button type="submit" disabled={busy} className="h-11 flex-1 rounded-xl text-sm font-bold">
+          <Button
+            type="submit"
+            disabled={busy}
+            loading={createCourse.isPending || updateCourse.isPending}
+            className="h-11 flex-1 rounded-xl text-sm font-bold"
+          >
             <HugeiconsIcon icon={Tick02Icon} data-icon="inline-start" />
             {isEdit ? "ذخیره تغییرات" : "ثبت درس"}
           </Button>
@@ -214,6 +219,7 @@ function CourseForm({ course, onDone }: { course: Course | null; onDone: () => v
               type="button"
               variant="destructive"
               disabled={busy}
+              loading={deleteCourse.isPending}
               onClick={onDelete}
               className="h-11 rounded-xl px-4 text-sm"
             >

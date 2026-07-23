@@ -6,7 +6,9 @@ import { Call02Icon, CheckmarkCircle02Icon, Copy01Icon, Mail01Icon } from "@huge
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, ErrorState, SearchBox } from "@/components/module/module-ui";
+import { SkeletonSearchBox, SkeletonSections } from "@/components/module/module-skeletons";
 import { Card } from "@/components/ui/card";
+import { LoadSwap } from "@/components/ui/load-swap";
 import { usePhoneBook } from "@/hooks/phone-book/use-phone-book";
 import { contactGroupIcon } from "@/lib/meta/phone-meta";
 import { cn, toPersianDigits } from "@/lib/utils";
@@ -76,29 +78,28 @@ export default function PhoneListPage() {
         }
       />
 
-      {isLoading ? (
-        <PhoneListSkeleton />
-      ) : isError ? (
-        <ErrorState
-          title="دریافت شماره‌ها ناموفق بود"
-          subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
-          onRetry={() => {
-            refetch();
-          }}
-        />
-      ) : groups.length === 0 ? (
-        <EmptyState
-          icon={Call02Icon}
-          title="هنوز شماره‌ای ثبت نشده است"
-          subtitle="به‌محض ثبت شماره‌های تماس توسط دانشگاه، اینجا نمایش داده می‌شود."
-        />
-      ) : (
-        <>
-          <div className="md:max-w-md">
-            <SearchBox value={query} onChange={setQuery} placeholder="جستجوی واحد یا شماره..." />
-          </div>
+      <LoadSwap loading={isLoading} skeleton={<PhoneListSkeleton />}>
+        {isError ? (
+          <ErrorState
+            title="دریافت شماره‌ها ناموفق بود"
+            subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
+            onRetry={() => {
+              refetch();
+            }}
+          />
+        ) : groups.length === 0 ? (
+          <EmptyState
+            icon={Call02Icon}
+            title="هنوز شماره‌ای ثبت نشده است"
+            subtitle="به‌محض ثبت شماره‌های تماس توسط دانشگاه، اینجا نمایش داده می‌شود."
+          />
+        ) : (
+          <div className="space-y-6">
+            <div className="md:max-w-md">
+              <SearchBox value={query} onChange={setQuery} placeholder="جستجوی واحد یا شماره..." />
+            </div>
 
-          <section id="content" className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
+            <section id="content" className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
             {filteredGroups.length === 0 ? (
               <EmptyState title="شماره‌ای یافت نشد" subtitle="عبارت دیگری را جستجو کنید" />
             ) : (
@@ -175,22 +176,24 @@ export default function PhoneListPage() {
                 </div>
               ))
             )}
-          </section>
-        </>
-      )}
+            </section>
+          </div>
+        )}
+      </LoadSwap>
     </div>
   );
 }
 
 function PhoneListSkeleton() {
   return (
-    <div className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
-      {[0, 1, 2].map((g) => (
-        <div key={g} className="space-y-2.5">
-          <div className="h-6 w-40 animate-pulse rounded-lg bg-card/60" />
-          <div className="h-[132px] animate-pulse rounded-2xl border border-border bg-card/50" />
-        </div>
-      ))}
+    <div className="space-y-6">
+      <SkeletonSearchBox />
+      <SkeletonSections
+        sections={4}
+        perSection={1}
+        cardClassName="h-36"
+        gridClassName="grid gap-3"
+      />
     </div>
   );
 }

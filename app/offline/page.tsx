@@ -10,7 +10,7 @@ export default function OfflinePage() {
     <div className="flex min-h-dvh flex-col items-center justify-center gap-6 px-6 text-center">
       <div className="rounded-[2rem] border border-border bg-card/60 p-6 shadow-xl backdrop-blur-xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icons/univers_logo.png" alt="Universe" className="h-20 w-20 object-contain" />
+        <img src="/icons/u-192x192.png" alt="Universe" className="h-20 w-20" />
       </div>
 
       <div className="space-y-2">

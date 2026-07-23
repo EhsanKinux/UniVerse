@@ -97,6 +97,17 @@
   }
 }
 
+/* Skeleton shimmer: a gleam sweeps across a muted base while content loads.
+   The band travels right→left, which reads naturally in this RTL app. */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.148 0.004 228.8);
@@ -274,6 +285,34 @@ a {
     color-mix(in oklab, var(--primary) 15%, transparent),
     transparent 72%
   );
+}
+
+/* Skeleton surface (see components/ui/skeleton.tsx). A muted base with a light
+   gleam sweeping across via the `shimmer` keyframe. The gleam alpha is tuned
+   per theme so it stays subtle on light surfaces and legible on dark ones. */
+.skeleton-shimmer {
+  background-color: var(--muted);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+}
+.dark .skeleton-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.07) 50%,
+    transparent 100%
+  );
+}
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton-shimmer {
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
 }
 
 /* Safe-area utilities (unlayered so they always win over Tailwind padding).

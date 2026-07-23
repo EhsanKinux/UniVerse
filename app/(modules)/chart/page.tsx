@@ -6,6 +6,9 @@ import { BookOpen01Icon, GraduationScrollIcon, SparklesIcon } from "@hugeicons/c
 import { DepartmentCard } from "@/components/chart/department-card";
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, ErrorState, InfoNote, SearchBox, SectionHeading } from "@/components/module/module-ui";
+import { SkeletonCardGrid, SkeletonSearchBox } from "@/components/module/module-skeletons";
+import { LoadSwap } from "@/components/ui/load-swap";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useChart } from "@/hooks/chart/use-chart";
 import { toPersianDigits } from "@/lib/utils";
 
@@ -51,50 +54,50 @@ export default function ChartPage() {
         }
       />
 
-      {isLoading ? (
-        <ChartSkeleton />
-      ) : isError ? (
-        <ErrorState
-          title="دریافت چارت‌ها ناموفق بود"
-          subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
-          onRetry={() => {
-            refetch();
-          }}
-        />
-      ) : departments.length === 0 ? (
-        <EmptyState
-          icon={GraduationScrollIcon}
-          title="هنوز چارتی ثبت نشده است"
-          subtitle="به‌محض بارگذاری چارت رشته‌ها توسط دانشگاه، اینجا نمایش داده می‌شود."
-        />
-      ) : (
-        <>
-          <div className="md:max-w-md">
-            <SearchBox
-              value={searchQuery}
-              onChange={setSearchQuery}
-              placeholder="جستجوی رشته یا چارت آموزشی..."
-            />
-          </div>
-
-          <section id="content" className="space-y-3">
-            <SectionHeading
-              title="رشته‌های تحصیلی"
-              subtitle="روی هر رشته بزنید تا چارت‌های آموزشی آن را ببینید و دانلود کنید."
-            />
-
-            <div className="grid items-start gap-3 md:grid-cols-2">
-              {filteredDepartments.length > 0 ? (
-                filteredDepartments.map((dept, index) => (
-                  <DepartmentCard key={dept.id} department={dept} index={index} />
-                ))
-              ) : (
-                <EmptyState title="نتیجه‌ای یافت نشد" subtitle="عبارت دیگری را جستجو کنید" />
-              )}
+      <LoadSwap loading={isLoading} skeleton={<ChartSkeleton />}>
+        {isError ? (
+          <ErrorState
+            title="دریافت چارت‌ها ناموفق بود"
+            subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
+            onRetry={() => {
+              refetch();
+            }}
+          />
+        ) : departments.length === 0 ? (
+          <EmptyState
+            icon={GraduationScrollIcon}
+            title="هنوز چارتی ثبت نشده است"
+            subtitle="به‌محض بارگذاری چارت رشته‌ها توسط دانشگاه، اینجا نمایش داده می‌شود."
+          />
+        ) : (
+          <div className="space-y-6">
+            <div className="md:max-w-md">
+              <SearchBox
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="جستجوی رشته یا چارت آموزشی..."
+              />
             </div>
-          </section>
-        </>
-      )}
+
+            <section id="content" className="space-y-3">
+              <SectionHeading
+                title="رشته‌های تحصیلی"
+                subtitle="روی هر رشته بزنید تا چارت‌های آموزشی آن را ببینید و دانلود کنید."
+              />
+
+              <div className="grid items-start gap-3 md:grid-cols-2">
+                {filteredDepartments.length > 0 ? (
+                  filteredDepartments.map((dept, index) => (
+                    <DepartmentCard key={dept.id} department={dept} index={index} />
+                  ))
+                ) : (
+                  <EmptyState title="نتیجه‌ای یافت نشد" subtitle="عبارت دیگری را جستجو کنید" />
+                )}
+              </div>
+            </section>
+          </div>
+        )}
+      </LoadSwap>
 
       <InfoNote title="💡 راهنما">
         چارت آموزشی نقشه‌ای از دروس هر رشته به همراه پیش‌نیازها و هم‌نیازها است. با دانلود چارت رشته خود، مسیر
@@ -106,10 +109,12 @@ export default function ChartPage() {
 
 function ChartSkeleton() {
   return (
-    <div className="grid gap-3 md:grid-cols-2">
-      {[0, 1, 2, 3].map((i) => (
-        <div key={i} className="h-[88px] animate-pulse rounded-2xl border border-border bg-card/50" />
-      ))}
+    <div className="space-y-6">
+      <SkeletonSearchBox />
+      <div className="space-y-3">
+        <Skeleton className="h-6 w-40 rounded-lg" />
+        <SkeletonCardGrid count={4} cardClassName="h-[88px]" className="grid gap-3 md:grid-cols-2" />
+      </div>
     </div>
   );
 }

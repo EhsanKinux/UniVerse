@@ -17,6 +17,9 @@ import {
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, ErrorState, SectionHeading } from "@/components/module/module-ui";
+import { SkeletonCardGrid } from "@/components/module/module-skeletons";
+import { LoadSwap } from "@/components/ui/load-swap";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DormCoverBanner } from "@/components/dorm/dorm-cover-banner";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -53,19 +56,18 @@ export default function DormitoryPage() {
         }
       />
 
-      {isLoading ? (
-        <DormSkeleton />
-      ) : isError ? (
-        <ErrorState
-          title="دریافت اطلاعات خوابگاه ناموفق بود"
-          subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
-          onRetry={() => {
-            refetch();
-          }}
-        />
-      ) : (
-        <>
-          {/* Announcements */}
+      <LoadSwap loading={isLoading} skeleton={<DormSkeleton />}>
+        {isError ? (
+          <ErrorState
+            title="دریافت اطلاعات خوابگاه ناموفق بود"
+            subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
+            onRetry={() => {
+              refetch();
+            }}
+          />
+        ) : (
+          <div className="space-y-6">
+            {/* Announcements */}
           <section id="content" className="space-y-3">
             <SectionHeading title="اطلاعیه‌های خوابگاه" subtitle="آخرین خبرها و اطلاعیه‌های خوابگاه" />
             {announcements.length === 0 ? (
@@ -112,8 +114,9 @@ export default function DormitoryPage() {
               </div>
             </section>
           )}
-        </>
-      )}
+          </div>
+        )}
+      </LoadSwap>
     </div>
   );
 }
@@ -242,15 +245,13 @@ function IconLink({ href, icon, title }: { href: string; icon: IconSvgElement; t
 function DormSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="h-28 animate-pulse rounded-2xl border border-border bg-card/50" />
-        ))}
+      <div className="space-y-3">
+        <Skeleton className="h-6 w-48 rounded-lg" />
+        <SkeletonCardGrid count={3} cardClassName="h-28" />
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
-        {[0, 1].map((i) => (
-          <div key={i} className="h-40 animate-pulse rounded-2xl border border-border bg-card/50" />
-        ))}
+        <Skeleton className="h-40 rounded-2xl" />
+        <Skeleton className="h-40 rounded-2xl" />
       </div>
     </div>
   );

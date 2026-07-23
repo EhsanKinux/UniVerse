@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { motion, MotionConfig } from "motion/react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Mail01Icon, UserIcon, AlertCircleIcon } from "@hugeicons/core-free-icons";
 
@@ -22,7 +23,7 @@ type Mode = "sign-in" | "sign-up";
 
 const COPY: Record<Mode, { title: string; subtitle: string; cta: string; emailLabel: string; switchText: string; switchHref: string; switchCta: string }> = {
   "sign-in": {
-    title: "خوش آمدید 👋",
+    title: "خوش آمدید",
     subtitle: "برای ادامه وارد حساب کاربری خود شوید",
     cta: "ورود",
     emailLabel: "ایمیل",
@@ -48,6 +49,15 @@ function safeRedirectTarget(): string {
   if (target && target.startsWith("/") && !target.startsWith("//")) return target;
   return "/";
 }
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.08 } },
+};
+const item = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 26 } },
+} as const;
 
 export function AuthForm({ mode }: { mode: Mode }) {
   const router = useRouter();
@@ -102,18 +112,28 @@ export function AuthForm({ mode }: { mode: Mode }) {
   }
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-3 duration-500">
-      {/* Brand */}
-      <div className="mb-6 flex flex-col items-center text-center">
-        <div className="mb-3 rounded-3xl border border-border bg-card/60 p-3 shadow-sm backdrop-blur-xl">
-          <Image src="/icons/univers_logo.png" alt="Universe" width={56} height={56} className="h-14 w-14 object-contain" />
+    <MotionConfig reducedMotion="user">
+    <motion.div initial="hidden" animate="show" variants={container}>
+      {/* Brand moment */}
+      <motion.div variants={item} className="mb-7 flex flex-col items-center text-center">
+        <div className="relative mb-4">
+          {/* Accent glow behind the mark */}
+          <div className="absolute inset-0 -z-10 rounded-[1.6rem] bg-primary/40 blur-2xl" />
+          <div className="rounded-[1.6rem] border border-white/50 bg-card/60 p-3.5 shadow-xl shadow-primary/10 backdrop-blur-xl dark:border-white/10">
+            <Image src="/icons/u-192x192.png" alt="Universe" width={192} height={192} className="h-14 w-14" priority />
+          </div>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">{copy.title}</h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">{copy.subtitle}</p>
-      </div>
+        <h1 className="text-[1.7rem] font-black tracking-tight text-balance">
+          {copy.title} <span aria-hidden>👋</span>
+        </h1>
+        <p className="mt-1.5 text-sm text-muted-foreground text-balance">{copy.subtitle}</p>
+      </motion.div>
 
       {/* Card */}
-      <div className="rounded-3xl border border-border bg-card/70 p-5 shadow-xl backdrop-blur-xl">
+      <motion.div
+        variants={item}
+        className="rounded-[1.75rem] border border-white/50 bg-card/60 p-5 shadow-2xl shadow-primary/5 backdrop-blur-2xl dark:border-white/10 dark:bg-card/50"
+      >
         <ModeSwitch mode={mode} />
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5" noValidate>
@@ -121,7 +141,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           {serverError && (
             <div
               role="alert"
-              className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/8 px-3 py-2.5 text-xs leading-5 text-destructive"
+              className="flex items-start gap-2 rounded-2xl border border-destructive/30 bg-destructive/8 px-3 py-2.5 text-xs leading-5 text-destructive"
             >
               <HugeiconsIcon icon={AlertCircleIcon} className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
               <div className="min-w-0 space-y-1">
@@ -189,8 +209,13 @@ export function AuthForm({ mode }: { mode: Mode }) {
             </div>
           )}
 
-          <Button type="submit" size="lg" disabled={busy} className="h-12 w-full rounded-2xl text-base font-semibold shadow-md shadow-primary/20">
-            {busy ? <Spinner /> : copy.cta}
+          <Button
+            type="submit"
+            size="lg"
+            loading={busy}
+            className="h-12 w-full rounded-2xl text-base font-semibold shadow-lg shadow-primary/25 transition active:scale-[0.98]"
+          >
+            {copy.cta}
           </Button>
         </form>
 
@@ -203,16 +228,17 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
         <SocialAuth disabled={busy} onSelect={onSso} />
         {ssoNote && <p className="mt-3 text-center text-[11px] text-muted-foreground">{ssoNote}</p>}
-      </div>
+      </motion.div>
 
       {/* Switch */}
-      <p className="mt-5 text-center text-sm text-muted-foreground">
+      <motion.p variants={item} className="mt-5 text-center text-sm text-muted-foreground">
         {copy.switchText}{" "}
         <Link href={copy.switchHref} className="font-semibold text-primary hover:underline">
           {copy.switchCta}
         </Link>
-      </p>
-    </div>
+      </motion.p>
+    </motion.div>
+    </MotionConfig>
   );
 }
 
@@ -220,13 +246,4 @@ export function AuthForm({ mode }: { mode: Mode }) {
 function formatWait(seconds: number): string {
   if (seconds < 90) return `${toPersianDigits(Math.max(1, Math.round(seconds)))} ثانیه`;
   return `${toPersianDigits(Math.ceil(seconds / 60))} دقیقه`;
-}
-
-function Spinner() {
-  return (
-    <span
-      className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground"
-      aria-label="در حال پردازش"
-    />
-  );
 }

@@ -13,7 +13,9 @@ import {
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, ErrorState, SectionHeading } from "@/components/module/module-ui";
+import { SkeletonSections } from "@/components/module/module-skeletons";
 import { Card } from "@/components/ui/card";
+import { LoadSwap } from "@/components/ui/load-swap";
 import { useGroups } from "@/hooks/groups/use-groups";
 import { groupsApi } from "@/lib/api/groups.api";
 import type { Group, GroupLink } from "@/lib/api/types";
@@ -175,51 +177,38 @@ export default function GroupsPage() {
         }
       />
 
-      {isLoading ? (
-        <GroupsSkeleton />
-      ) : isError ? (
-        <ErrorState
-          title="دریافت گروه‌ها ناموفق بود"
-          subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
-          onRetry={() => {
-            refetch();
-          }}
-        />
-      ) : categories.length === 0 ? (
-        <EmptyState
-          icon={UserGroupIcon}
-          title="هنوز گروهی ثبت نشده است"
-          subtitle="به‌محض ثبت گروه‌ها و کانال‌ها توسط دانشگاه، اینجا نمایش داده می‌شود."
-        />
-      ) : (
-        <section id="content" className="space-y-5">
-          {categories.map((category) => (
-            <div key={category.id} className="space-y-3">
-              <SectionHeading title={category.title} />
-              <div className="grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {category.groups.map((group) => renderCard(group))}
+      <LoadSwap loading={isLoading} skeleton={<GroupsSkeleton />}>
+        {isError ? (
+          <ErrorState
+            title="دریافت گروه‌ها ناموفق بود"
+            subtitle="اتصال به سرور برقرار نشد. دوباره تلاش کنید."
+            onRetry={() => {
+              refetch();
+            }}
+          />
+        ) : categories.length === 0 ? (
+          <EmptyState
+            icon={UserGroupIcon}
+            title="هنوز گروهی ثبت نشده است"
+            subtitle="به‌محض ثبت گروه‌ها و کانال‌ها توسط دانشگاه، اینجا نمایش داده می‌شود."
+          />
+        ) : (
+          <section id="content" className="space-y-5">
+            {categories.map((category) => (
+              <div key={category.id} className="space-y-3">
+                <SectionHeading title={category.title} />
+                <div className="grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  {category.groups.map((group) => renderCard(group))}
+                </div>
               </div>
-            </div>
-          ))}
-        </section>
-      )}
+            ))}
+          </section>
+        )}
+      </LoadSwap>
     </div>
   );
 }
 
 function GroupsSkeleton() {
-  return (
-    <div className="space-y-5">
-      {[0, 1].map((s) => (
-        <div key={s} className="space-y-3">
-          <div className="h-6 w-40 animate-pulse rounded-lg bg-card/60" />
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {[0, 1].map((c) => (
-              <div key={c} className="h-[128px] animate-pulse rounded-2xl border border-border bg-card/50" />
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+  return <SkeletonSections sections={2} perSection={2} cardClassName="h-32" />;
 }

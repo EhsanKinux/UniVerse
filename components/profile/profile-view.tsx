@@ -88,7 +88,7 @@ export function ProfileView() {
               variant="destructive"
               size="lg"
               onClick={() => logout.mutate()}
-              disabled={logout.isPending}
+              loading={logout.isPending}
               className="h-12 w-full rounded-2xl text-base font-semibold"
             >
               <HugeiconsIcon icon={Logout02Icon} size={20} />

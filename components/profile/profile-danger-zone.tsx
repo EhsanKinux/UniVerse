@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Delete02Icon, Alert02Icon, Loading03Icon } from "@hugeicons/core-free-icons";
+import { Delete02Icon, Alert02Icon } from "@hugeicons/core-free-icons";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -99,14 +99,11 @@ export function ProfileDangerZone() {
               type="submit"
               variant="destructive"
               size="lg"
-              disabled={!password.trim() || del.isPending}
+              disabled={!password.trim()}
+              loading={del.isPending}
               className="h-11 flex-1 rounded-2xl font-semibold"
             >
-              <HugeiconsIcon
-                icon={del.isPending ? Loading03Icon : Delete02Icon}
-                size={18}
-                className={cn(del.isPending && "animate-spin")}
-              />
+              <HugeiconsIcon icon={Delete02Icon} size={18} />
               حذف قطعی
             </Button>
           </div>

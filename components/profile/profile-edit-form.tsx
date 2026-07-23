@@ -7,7 +7,6 @@ import {
   Tick02Icon,
   Mail01Icon,
   ArrowDown01Icon,
-  Loading03Icon,
 } from "@hugeicons/core-free-icons";
 
 import { cn, toEnglishDigits } from "@/lib/utils";
@@ -152,14 +151,10 @@ export function ProfileEditForm({
           <Button
             type="submit"
             size="lg"
-            disabled={update.isPending}
+            loading={update.isPending}
             className="h-11 flex-1 rounded-2xl font-semibold shadow-sm shadow-primary/20"
           >
-            <HugeiconsIcon
-              icon={update.isPending ? Loading03Icon : Tick02Icon}
-              size={18}
-              className={cn(update.isPending && "animate-spin")}
-            />
+            <HugeiconsIcon icon={Tick02Icon} size={18} />
             ذخیره
           </Button>
         </div>

@@ -12,7 +12,9 @@ import {
 
 import { ModuleHero } from "@/components/module/module-hero";
 import { EmptyState, ErrorState, InfoNote, SectionHeading } from "@/components/module/module-ui";
+import { ModuleHeroSkeleton } from "@/components/module/module-skeletons";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCategoryDocuments } from "@/hooks/documents/use-category-documents";
 import { documentsApi } from "@/lib/api/documents.api";
 import type { DocumentMeta } from "@/lib/api/types";
@@ -230,9 +232,11 @@ function IconLink({ href, icon, title }: { href: string; icon: IconSvgElement; t
 function CoursesSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="h-44 animate-pulse rounded-3xl border border-border bg-card/50" />
-      <div className="h-8 w-40 animate-pulse rounded-xl bg-muted" />
-      <div className="h-52 animate-pulse rounded-3xl border border-border bg-card/50" />
+      <ModuleHeroSkeleton stats={2} />
+      <div className="space-y-3">
+        <Skeleton className="h-7 w-40" />
+        <Skeleton className="h-52 rounded-3xl" />
+      </div>
     </div>
   );
 }

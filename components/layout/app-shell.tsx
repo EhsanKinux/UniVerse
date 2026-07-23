@@ -1,9 +1,11 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { bottomTabs } from "@/lib/data/university-data";
 import { cn } from "@/lib/utils";
@@ -12,6 +14,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { NotificationBell } from "../notifications/notification-bell";
 import { ProfileMenu } from "../profile/profile-menu";
 import { AppSidebar } from "./app-sidebar";
+import { PullToRefresh } from "./pull-to-refresh";
 
 /**
  * Responsive app frame. Below lg: sticky header + floating bottom tab bar
@@ -27,6 +30,13 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const activeIndex = bottomTabs.findIndex((tab) => tab.href === pathname);
+
+  // Pull-to-refresh re-runs whatever queries the current screen is using.
+  const queryClient = useQueryClient();
+  const handleRefresh = React.useCallback(
+    () => queryClient.refetchQueries({ type: "active" }),
+    [queryClient],
+  );
 
   return (
     <TooltipProvider>
@@ -78,7 +88,9 @@ export function AppShell({
 
           {/* Content */}
           <main className="flex-1 px-4 py-4 lg:px-8 lg:py-6">
-            <div className="mx-auto w-full max-w-3xl lg:max-w-6xl">{children}</div>
+            <PullToRefresh onRefresh={handleRefresh}>
+              <div className="mx-auto w-full max-w-3xl lg:max-w-6xl">{children}</div>
+            </PullToRefresh>
           </main>
 
           {/* Bottom Navigation — floating, liquid-glass tab bar (mobile/tablet only).
